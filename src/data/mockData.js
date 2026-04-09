@@ -52,7 +52,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2026-01-15',
     link: 'nikit34.github.io/numi/product/prod_02',
-    content: { type: 'link', url: 'https://course.numi.store/youtube-guide', label: 'Go to Course' },
+    content: { type: 'link', url: 'https://youtube.com/playlist?list=example', label: 'Go to Course' },
   },
   {
     id: 'prod_03',
@@ -109,7 +109,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2026-03-10',
     link: 'nikit34.github.io/numi/product/prod_05',
-    content: { type: 'link', url: 'https://course.numi.store/typescript', label: 'Go to Lessons' },
+    content: { type: 'link', url: 'https://academy.example.com/typescript', label: 'Go to Lessons' },
   },
   {
     id: 'prod_06',
