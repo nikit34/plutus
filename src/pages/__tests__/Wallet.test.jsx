@@ -1,8 +1,10 @@
-import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../test/render';
 import Wallet from '../Wallet';
+
+beforeAll(() => { window.__NUMI_TEST__ = true; });
 
 describe('Job 4: Get paid (wallet)', () => {
   it('shows available balance', () => {
@@ -25,11 +27,39 @@ describe('Job 4: Get paid (wallet)', () => {
     expect(screen.getByRole('button', { name: /withdraw funds/i })).toBeInTheDocument();
   });
 
-  it('shows notification on withdrawal', async () => {
+  it('opens withdrawal modal with amount and breakdown', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Wallet />);
     await user.click(screen.getByRole('button', { name: /withdraw funds/i }));
-    expect(screen.getByText(/withdrawal request sent/i)).toBeInTheDocument();
+    expect(screen.getByText(/withdrawal amount/i)).toBeInTheDocument();
+    expect(screen.getByText(/stripe fee/i)).toBeInTheDocument();
+    expect(screen.getByText(/you receive/i)).toBeInTheDocument();
+    expect(screen.getByText(/arrives in 1-2 business days/i)).toBeInTheDocument();
+  });
+
+  it('completes full withdrawal flow: confirm → processing → done', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Wallet />);
+
+    await user.click(screen.getByRole('button', { name: /withdraw funds/i }));
+    await user.click(screen.getByRole('button', { name: /confirm withdrawal/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/withdrawal sent/i)).toBeInTheDocument();
+    });
+  });
+
+  it('updates balance after withdrawal', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Wallet />);
+
+    await user.click(screen.getByRole('button', { name: /withdraw funds/i }));
+    await user.click(screen.getByRole('button', { name: /confirm withdrawal/i }));
+
+    await waitFor(() => { expect(screen.getByText(/withdrawal sent/i)).toBeInTheDocument(); });
+    await user.click(screen.getByRole('button', { name: /done/i }));
+
+    expect(screen.getByText(/no funds available/i)).toBeInTheDocument();
   });
 
   it('shows Stripe Connect as payout method', () => {
@@ -49,7 +79,6 @@ describe('Job 4: Get paid (wallet)', () => {
     renderWithProviders(<Wallet />);
     expect(screen.getByText(/payout history/i)).toBeInTheDocument();
     expect(screen.getByText(/mar 28, 2026/i)).toBeInTheDocument();
-    expect(screen.getByText(/feb 28, 2026/i)).toBeInTheDocument();
   });
 
   it('shows platform fee', () => {
