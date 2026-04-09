@@ -19,7 +19,6 @@ export default function ProductPublic() {
   const theme = THEMES[product.theme] || THEMES.midnight;
   const [showCheckout, setShowCheckout] = useState(false);
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [purchased, setPurchased] = useState(false);
 
@@ -206,21 +205,7 @@ export default function ProductPublic() {
                   >
                     <div>
                       <label className="block text-xs mb-1.5 opacity-50" style={{ color: theme.text }}>
-                        Имя
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        placeholder="Иван Иванов"
-                        className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/5 border border-white/8 placeholder:opacity-30 focus:border-white/20 transition-colors"
-                        style={{ color: theme.text }}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs mb-1.5 opacity-50" style={{ color: theme.text }}>
-                        Email
+                        Email для получения товара
                       </label>
                       <input
                         type="email"

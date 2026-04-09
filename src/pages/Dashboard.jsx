@@ -178,10 +178,8 @@ function FeedItem({ event, index }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm">
-            <span className="text-text-secondary">Новая продажа: </span>
             <span className="font-medium">{event.productTitle}</span>
           </div>
-          <div className="text-xs text-text-tertiary mt-0.5">{event.buyerEmail}</div>
         </div>
         <div className="text-sm font-semibold text-green flex-shrink-0">+{formatPrice(event.amount)}</div>
         <div className="text-xs text-text-tertiary flex-shrink-0 w-20 text-right">{event.time}</div>
