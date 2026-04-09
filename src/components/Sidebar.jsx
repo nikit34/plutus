@@ -3,10 +3,9 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
   Package,
-  PlusCircle,
   BarChart3,
+  Wallet,
   Settings,
-  LogOut,
   Sparkles,
   ChevronLeft,
   ChevronRight,
@@ -16,11 +15,10 @@ import { useStore } from '../data/store';
 import { formatPrice } from '../data/mockData';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Дашборд' },
+  { to: '/', icon: LayoutDashboard, label: 'Главная' },
   { to: '/products', icon: Package, label: 'Продукты' },
-  { to: '/create', icon: PlusCircle, label: 'Создать' },
   { to: '/analytics', icon: BarChart3, label: 'Аналитика' },
-  { to: '/settings', icon: Settings, label: 'Настройки' },
+  { to: '/wallet', icon: Wallet, label: 'Кошелёк' },
 ];
 
 export default function Sidebar() {
@@ -98,6 +96,21 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Settings + Profile */}
+      <div className="px-3 mb-2">
+        <NavLink
+          to="/settings"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+            location.pathname === '/settings'
+              ? 'text-gold bg-gold-dim'
+              : 'text-text-tertiary hover:text-text-secondary hover:bg-bg-elevated'
+          }`}
+        >
+          <Settings size={18} className="flex-shrink-0" />
+          {!collapsed && <span>Настройки</span>}
+        </NavLink>
+      </div>
 
       {/* Creator profile */}
       {!collapsed && (

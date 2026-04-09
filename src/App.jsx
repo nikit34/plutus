@@ -7,6 +7,7 @@ import Products from './pages/Products';
 import CreateProduct from './pages/CreateProduct';
 import ProductPublic from './pages/ProductPublic';
 import Analytics from './pages/Analytics';
+import Wallet from './pages/Wallet';
 import Settings from './pages/Settings';
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/create" element={<CreateProduct />} />
             <Route path="/edit/:id" element={<CreateProduct />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/wallet" element={<Wallet />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </AnimatePresence>

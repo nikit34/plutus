@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { User, CreditCard, Bell, Shield, Palette, ExternalLink } from 'lucide-react';
+import { User, Bell } from 'lucide-react';
 import { useStore } from '../data/store';
 import { useState } from 'react';
 
@@ -62,38 +62,11 @@ export default function Settings() {
         </div>
       </motion.div>
 
-      {/* Payouts */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="p-6 rounded-2xl bg-bg-card border border-border"
-      >
-        <div className="flex items-center gap-2 mb-5">
-          <CreditCard size={16} className="text-text-secondary" />
-          <h3 className="text-base font-semibold">Выплаты</h3>
-        </div>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 rounded-xl bg-bg-elevated">
-            <div>
-              <div className="text-sm font-medium">Банковская карта</div>
-              <div className="text-xs text-text-tertiary">**** 4242</div>
-            </div>
-            <span className="text-xs text-green bg-green-dim px-2.5 py-1 rounded-full font-medium">
-              Активна
-            </span>
-          </div>
-          <div className="text-xs text-text-tertiary">
-            Комиссия платформы: <span className="text-gold font-medium">5%</span> с каждой продажи
-          </div>
-        </div>
-      </motion.div>
-
       {/* Notifications */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.15 }}
         className="p-6 rounded-2xl bg-bg-card border border-border"
       >
         <div className="flex items-center gap-2 mb-5">

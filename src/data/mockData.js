@@ -171,6 +171,28 @@ export const EARNINGS_HISTORY = [
   { month: 'Апр', amount: 198400 },
 ];
 
+export const ACTIVITY_FEED = [
+  { id: 'ev_01', type: 'sale', productId: 'prod_01', productTitle: 'Notion-система для фрилансера', amount: 2490, buyerName: 'Мария К.', time: '12 мин назад' },
+  { id: 'ev_02', type: 'sale', productId: 'prod_04', productTitle: 'Figma UI Kit — SaaS Dashboard', amount: 4990, buyerName: 'Дмитрий Л.', time: '47 мин назад' },
+  { id: 'ev_03', type: 'sale', productId: 'prod_02', productTitle: 'Гайд: YouTube с нуля до монетизации', amount: 3990, buyerName: 'Анна В.', time: '1 ч назад' },
+  { id: 'ev_04', type: 'milestone', text: 'Продукт «Notion-система» преодолел 400 продаж!', time: '2 ч назад' },
+  { id: 'ev_05', type: 'sale', productId: 'prod_01', productTitle: 'Notion-система для фрилансера', amount: 2490, buyerName: 'Олег С.', time: '3 ч назад' },
+  { id: 'ev_06', type: 'sale', productId: 'prod_03', productTitle: 'Пресеты для Lightroom — Moody Cinema', amount: 1290, buyerName: 'Екатерина Р.', time: '4 ч назад' },
+  { id: 'ev_07', type: 'review', productTitle: 'Figma UI Kit — SaaS Dashboard', stars: 5, text: '«Лучший UI Kit, что я видел. Стоит каждого рубля»', reviewerName: 'Артём Н.', time: '5 ч назад' },
+  { id: 'ev_08', type: 'sale', productId: 'prod_05', productTitle: 'Курс: Основы TypeScript', amount: 6990, buyerName: 'Игорь П.', time: '6 ч назад' },
+  { id: 'ev_09', type: 'sale', productId: 'prod_02', productTitle: 'Гайд: YouTube с нуля до монетизации', amount: 3990, buyerName: 'Светлана М.', time: '8 ч назад' },
+  { id: 'ev_10', type: 'tip', text: 'Повысьте цену на пресеты Lightroom на 23% — конверсия 3.6% позволяет. Прогноз: +₽56K/мес.', time: 'Сегодня' },
+];
+
+export const TODAY_STATS = {
+  earnings: 22240,
+  sales: 7,
+  views: 342,
+  earningsChange: +18.5,
+  salesChange: +40,
+  viewsChange: +12.3,
+};
+
 export const PLATFORM_FEE = 0.05; // 5%
 
 export function formatPrice(amount, currency = 'RUB') {
