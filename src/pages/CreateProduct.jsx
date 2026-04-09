@@ -48,7 +48,8 @@ export default function CreateProduct() {
     setLinkGenerated(true);
   };
 
-  const generatedLink = `numi.store/p/${title.toLowerCase().replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '-').slice(0, 30) || 'product'}`;
+  const slug = title.toLowerCase().replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '-').slice(0, 30) || 'product';
+  const generatedLink = `nikit34.github.io/numi/product/${existing?.id || slug}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText('https://' + generatedLink);

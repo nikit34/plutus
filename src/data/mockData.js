@@ -32,7 +32,7 @@ export const PRODUCTS = [
     theme: 'midnight',
     status: 'active',
     createdAt: '2025-12-01',
-    link: 'numi.store/p/notion-freelancer',
+    link: 'nikit34.github.io/numi/product/prod_01',
     content: { type: 'link', url: 'https://notion.so/template/freelancer-system', label: 'Open Notion Template' },
   },
   {
@@ -51,7 +51,7 @@ export const PRODUCTS = [
     theme: 'aurora',
     status: 'active',
     createdAt: '2026-01-15',
-    link: 'numi.store/p/youtube-guide',
+    link: 'nikit34.github.io/numi/product/prod_02',
     content: { type: 'link', url: 'https://course.numi.store/youtube-guide', label: 'Go to Course' },
   },
   {
@@ -70,7 +70,7 @@ export const PRODUCTS = [
     theme: 'ember',
     status: 'active',
     createdAt: '2026-02-20',
-    link: 'numi.store/p/moody-presets',
+    link: 'nikit34.github.io/numi/product/prod_03',
     content: { type: 'file', fileName: 'Moody_Cinema_Presets.zip', fileSize: '24 MB' },
   },
   {
@@ -89,7 +89,7 @@ export const PRODUCTS = [
     theme: 'midnight',
     status: 'active',
     createdAt: '2026-03-01',
-    link: 'numi.store/p/saas-uikit',
+    link: 'nikit34.github.io/numi/product/prod_04',
     content: { type: 'file', fileName: 'SaaS_Dashboard_UIKit.fig', fileSize: '18 MB' },
   },
   {
@@ -108,7 +108,7 @@ export const PRODUCTS = [
     theme: 'aurora',
     status: 'active',
     createdAt: '2026-03-10',
-    link: 'numi.store/p/typescript-course',
+    link: 'nikit34.github.io/numi/product/prod_05',
     content: { type: 'link', url: 'https://course.numi.store/typescript', label: 'Go to Lessons' },
   },
   {
@@ -127,7 +127,7 @@ export const PRODUCTS = [
     theme: 'ember',
     status: 'draft',
     createdAt: '2026-03-25',
-    link: 'numi.store/p/ig-minimal',
+    link: 'nikit34.github.io/numi/product/prod_06',
     content: { type: 'file', fileName: 'IG_Minimal_Templates.zip', fileSize: '56 MB' },
   },
 ];

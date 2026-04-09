@@ -9,9 +9,10 @@ export function StoreProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
 
   const addProduct = useCallback((product) => {
+    const id = 'prod_' + String(products.length + 1).padStart(2, '0');
     const newProduct = {
       ...product,
-      id: 'prod_' + String(products.length + 1).padStart(2, '0'),
+      id,
       sales: 0,
       revenue: 0,
       views: 0,
@@ -20,7 +21,7 @@ export function StoreProvider({ children }) {
       trend: 0,
       status: 'active',
       createdAt: new Date().toISOString().split('T')[0],
-      link: 'numi.store/p/' + slugify(product.title),
+      link: 'nikit34.github.io/numi/product/' + id,
     };
     setProducts((prev) => [newProduct, ...prev]);
     return newProduct;
@@ -72,14 +73,6 @@ export function useStore() {
   const ctx = useContext(StoreContext);
   if (!ctx) throw new Error('useStore must be inside StoreProvider');
   return ctx;
-}
-
-function slugify(str) {
-  return str
-    .toLowerCase()
-    .replace(/[^a-zа-яё0-9\s-]/gi, '')
-    .replace(/\s+/g, '-')
-    .slice(0, 40);
 }
 
 function estimateRevenue(price) {
