@@ -4,56 +4,43 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../test/render';
 import CreateProduct from '../CreateProduct';
 
-describe('Job: Быстро поделиться ссылкой в соцсетях', () => {
-  it('после создания продукта показывает кнопки шаринга', async () => {
+describe('Job: Share product link on social', () => {
+  it('shows share buttons after product creation', async () => {
     const user = userEvent.setup();
     renderWithProviders(<CreateProduct />);
-
-    await user.type(screen.getByPlaceholderText(/notion-система/i), 'Тест');
-    await user.type(screen.getByPlaceholderText('2490'), '1000');
-    await user.click(screen.getByRole('button', { name: /создать продукт/i }));
-
-    expect(screen.getByText(/поделиться/i)).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText(/notion system/i), 'Test');
+    await user.type(screen.getByPlaceholderText('29'), '10');
+    await user.click(screen.getByRole('button', { name: /create product/i }));
+    expect(screen.getByText(/share/i)).toBeInTheDocument();
   });
 
-  it('показывает ссылки на Telegram, WhatsApp, X, VK', async () => {
+  it('shows Telegram, WhatsApp, X links', async () => {
     const user = userEvent.setup();
     renderWithProviders(<CreateProduct />);
-
-    await user.type(screen.getByPlaceholderText(/notion-система/i), 'Тест');
-    await user.type(screen.getByPlaceholderText('2490'), '1000');
-    await user.click(screen.getByRole('button', { name: /создать продукт/i }));
-
+    await user.type(screen.getByPlaceholderText(/notion system/i), 'Test');
+    await user.type(screen.getByPlaceholderText('29'), '10');
+    await user.click(screen.getByRole('button', { name: /create product/i }));
     expect(screen.getByTitle('Telegram')).toBeInTheDocument();
     expect(screen.getByTitle('WhatsApp')).toBeInTheDocument();
     expect(screen.getByTitle('X')).toBeInTheDocument();
-    expect(screen.getByTitle('VK')).toBeInTheDocument();
   });
 
-  it('кнопка "Текст + ссылка" копирует форматированный текст', async () => {
+  it('has copy link button', async () => {
     const user = userEvent.setup();
     renderWithProviders(<CreateProduct />);
-
-    await user.type(screen.getByPlaceholderText(/notion-система/i), 'Тест');
-    await user.type(screen.getByPlaceholderText('2490'), '1000');
-    await user.click(screen.getByRole('button', { name: /создать продукт/i }));
-
-    const copyBtn = screen.getByRole('button', { name: /текст \+ ссылка/i });
-    expect(copyBtn).toBeInTheDocument();
+    await user.type(screen.getByPlaceholderText(/notion system/i), 'Test');
+    await user.type(screen.getByPlaceholderText('29'), '10');
+    await user.click(screen.getByRole('button', { name: /create product/i }));
+    expect(screen.getByRole('button', { name: /copy link/i })).toBeInTheDocument();
   });
 
-  it('ссылки на соцсети содержат правильные URL', async () => {
+  it('share links contain correct URLs', async () => {
     const user = userEvent.setup();
     renderWithProviders(<CreateProduct />);
-
-    await user.type(screen.getByPlaceholderText(/notion-система/i), 'Мой продукт');
-    await user.type(screen.getByPlaceholderText('2490'), '500');
-    await user.click(screen.getByRole('button', { name: /создать продукт/i }));
-
-    const tgLink = screen.getByTitle('Telegram');
-    expect(tgLink.getAttribute('href')).toContain('t.me/share');
-
-    const waLink = screen.getByTitle('WhatsApp');
-    expect(waLink.getAttribute('href')).toContain('wa.me');
+    await user.type(screen.getByPlaceholderText(/notion system/i), 'My product');
+    await user.type(screen.getByPlaceholderText('29'), '5');
+    await user.click(screen.getByRole('button', { name: /create product/i }));
+    expect(screen.getByTitle('Telegram').getAttribute('href')).toContain('t.me/share');
+    expect(screen.getByTitle('WhatsApp').getAttribute('href')).toContain('wa.me');
   });
 });

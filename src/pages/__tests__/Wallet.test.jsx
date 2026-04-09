@@ -4,67 +4,57 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../test/render';
 import Wallet from '../Wallet';
 
-describe('Job 4: Получить деньги (кошелёк)', () => {
-  it('показывает баланс доступный к выводу', () => {
+describe('Job 4: Get paid (wallet)', () => {
+  it('shows available balance', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/доступно к выводу/i)).toBeInTheDocument();
+    expect(screen.getByText(/available to withdraw/i)).toBeInTheDocument();
   });
 
-  it('показывает общий заработок', () => {
+  it('shows total earned', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/всего заработано/i)).toBeInTheDocument();
+    expect(screen.getByText(/total earned/i)).toBeInTheDocument();
   });
 
-  it('показывает сумму выведенных средств', () => {
+  it('shows paid out amount', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/выведено/i)).toBeInTheDocument();
+    expect(screen.getByText(/paid out/i)).toBeInTheDocument();
   });
 
-  it('показывает кнопку вывода средств', () => {
+  it('shows withdraw button', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByRole('button', { name: /вывести средства/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /withdraw funds/i })).toBeInTheDocument();
   });
 
-  it('при нажатии на вывод показывает уведомление', async () => {
+  it('shows notification on withdrawal', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Wallet />);
-
-    const buttons = screen.getAllByRole('button', { name: /вывести средства/i });
-    await user.click(buttons[0]);
-
-    expect(screen.getByText(/заявка на вывод отправлена/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /withdraw funds/i }));
+    expect(screen.getByText(/withdrawal request sent/i)).toBeInTheDocument();
   });
 
-  it('показывает способ получения (карта)', () => {
+  it('shows Stripe Connect as payout method', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/способ получения/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/4242/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/payout method/i)).toBeInTheDocument();
+    expect(screen.getByText(/stripe connect/i)).toBeInTheDocument();
+    expect(screen.getByText('Connected')).toBeInTheDocument();
   });
 
-  it('показывает дату следующей выплаты', () => {
+  it('shows next payout date', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/следующая выплата/i)).toBeInTheDocument();
-    expect(screen.getByText(/28 апр 2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/next payout/i)).toBeInTheDocument();
+    expect(screen.getByText(/apr 28, 2026/i)).toBeInTheDocument();
   });
 
-  it('показывает историю выплат', () => {
+  it('shows payout history', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/история выплат/i)).toBeInTheDocument();
-    expect(screen.getByText(/28 мар 2026/i)).toBeInTheDocument();
-    expect(screen.getByText(/28 фев 2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/payout history/i)).toBeInTheDocument();
+    expect(screen.getByText(/mar 28, 2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/feb 28, 2026/i)).toBeInTheDocument();
   });
 
-  it('показывает комиссию платформы', () => {
+  it('shows platform fee', () => {
     renderWithProviders(<Wallet />);
-
-    expect(screen.getByText(/комиссия платформы/i)).toBeInTheDocument();
+    expect(screen.getByText(/platform fee/i)).toBeInTheDocument();
     expect(screen.getByText(/5%/)).toBeInTheDocument();
   });
 });

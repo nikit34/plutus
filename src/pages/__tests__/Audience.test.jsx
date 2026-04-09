@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
@@ -8,96 +8,90 @@ import Dashboard from '../Dashboard';
 import ProductPublic from '../ProductPublic';
 import Settings from '../Settings';
 
+beforeAll(() => { window.__NUMI_TEST__ = true; });
+
 function renderProductPage(productId = 'prod_01') {
   return render(
     <MemoryRouter initialEntries={[`/product/${productId}`]}>
-      <Routes>
-        <Route path="/product/:id" element={<ProductPublic />} />
-      </Routes>
+      <Routes><Route path="/product/:id" element={<ProductPublic />} /></Routes>
     </MemoryRouter>
   );
 }
 
-describe('Job: Собрать аудиторию', () => {
-  describe('После покупки — подписка на креатора', () => {
-    it('после покупки показывает предложение подписаться', async () => {
+async function purchaseProduct(user) {
+  await user.click(screen.getByRole('button', { name: /buy for/i }));
+  await user.click(screen.getByText('Card'));
+  await waitFor(() => {
+    expect(screen.getByText(/payment successful/i)).toBeInTheDocument();
+  });
+}
+
+describe('Job: Build audience', () => {
+  describe('After purchase — follow creator', () => {
+    it('shows follow prompt after purchase', async () => {
       const user = userEvent.setup();
       renderProductPage('prod_01');
-
-      await user.click(screen.getByRole('button', { name: /купить/i }));
-
-      expect(screen.getByText(/подпишитесь на автора/i)).toBeInTheDocument();
+      await purchaseProduct(user);
+      expect(screen.getByText(/follow the creator/i)).toBeInTheDocument();
     });
 
-    it('показывает имя креатора', async () => {
+    it('shows creator name', async () => {
       const user = userEvent.setup();
       renderProductPage('prod_01');
-
-      await user.click(screen.getByRole('button', { name: /купить/i }));
-
-      expect(screen.getByText('Алексей Петров')).toBeInTheDocument();
+      await purchaseProduct(user);
+      expect(screen.getByText('Alex Carter')).toBeInTheDocument();
     });
 
-    it('показывает кнопку подписки со ссылкой креатора', async () => {
+    it('shows follow button with link', async () => {
       const user = userEvent.setup();
       renderProductPage('prod_01');
-
-      await user.click(screen.getByRole('button', { name: /купить/i }));
-
-      const link = screen.getByText(/подписаться/i);
-      expect(link).toBeInTheDocument();
-      expect(link.closest('a').getAttribute('href')).toBeTruthy();
+      await purchaseProduct(user);
+      const followLink = screen.getByText(/follow on youtube/i);
+      expect(followLink).toBeInTheDocument();
+      expect(followLink.closest('a').getAttribute('href')).toBeTruthy();
     });
 
-    it('показывает количество подписчиков', async () => {
+    it('shows follower count', async () => {
       const user = userEvent.setup();
       renderProductPage('prod_01');
-
-      await user.click(screen.getByRole('button', { name: /купить/i }));
-
-      expect(screen.getByText(/1[\s\u00a0]?847\+?\s*подписчиков/i)).toBeInTheDocument();
+      await purchaseProduct(user);
+      expect(screen.getByText(/12,400\+?\s*followers/i)).toBeInTheDocument();
     });
   });
 
-  describe('Дашборд — виджет аудитории', () => {
-    it('показывает виджет аудитории с количеством подписчиков', () => {
+  describe('Dashboard — audience widget', () => {
+    it('shows audience widget with follower count', () => {
       renderWithProviders(<Dashboard />);
-
-      expect(screen.getByText('Аудитория')).toBeInTheDocument();
-      expect(screen.getByText(/1[\s\u00a0]?847/)).toBeInTheDocument();
+      expect(screen.getByText('Audience')).toBeInTheDocument();
+      expect(screen.getByText(/12,400/)).toBeInTheDocument();
     });
 
-    it('показывает рост подписчиков', () => {
+    it('shows follower growth', () => {
       renderWithProviders(<Dashboard />);
-
       expect(screen.getByText(/\+12\.4%/)).toBeInTheDocument();
     });
 
-    it('показывает название канала', () => {
+    it('shows social channel label', () => {
       renderWithProviders(<Dashboard />);
-
-      expect(screen.getByText(/telegram/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/youtube/i).length).toBeGreaterThanOrEqual(1);
     });
   });
 
-  describe('Настройки — ссылка на канал', () => {
-    it('показывает поле для ссылки на канал', () => {
+  describe('Settings — social channel', () => {
+    it('shows social channel field', () => {
       renderWithProviders(<Settings />);
-
-      expect(screen.getByText(/ссылка на канал/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText(/t\.me/i)).toBeInTheDocument();
+      expect(screen.getByText(/social channel/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/youtube\.com/i)).toBeInTheDocument();
     });
 
-    it('показывает поле для названия канала', () => {
+    it('shows label field', () => {
       renderWithProviders(<Settings />);
-
-      expect(screen.getByPlaceholderText(/название/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/label/i)).toBeInTheDocument();
     });
 
-    it('объясняет зачем нужен канал', () => {
+    it('explains what the channel is for', () => {
       renderWithProviders(<Settings />);
-
-      expect(screen.getByText(/покупатели увидят предложение подписаться/i)).toBeInTheDocument();
+      expect(screen.getByText(/buyers will see a follow prompt/i)).toBeInTheDocument();
     });
   });
 });

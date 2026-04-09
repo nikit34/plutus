@@ -3,57 +3,48 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../test/render';
 import Analytics from '../Analytics';
 
-describe('Job 3: Понять и оптимизировать (аналитика)', () => {
-  it('показывает заголовок страницы', () => {
+describe('Job 3: Analyze and optimize', () => {
+  it('shows page title', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText('Аналитика')).toBeInTheDocument();
+    expect(screen.getByText('Analytics')).toBeInTheDocument();
   });
 
-  it('показывает 4 ключевые метрики', () => {
+  it('shows 4 key metrics', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText('Общий доход')).toBeInTheDocument();
-    // "Продажи" и "Просмотры" появляются и в метриках, и в таблице
-    expect(screen.getAllByText('Продажи').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Просмотры').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Конверсия').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('Total Revenue')).toBeInTheDocument();
+    expect(screen.getAllByText('Sales').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Views').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Conversion').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('показывает график динамики заработка', () => {
+  it('shows earnings trend chart', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText(/динамика заработка/i)).toBeInTheDocument();
-    expect(screen.getByText(/последние 7 месяцев/i)).toBeInTheDocument();
-    expect(screen.getByText('Окт')).toBeInTheDocument();
-    expect(screen.getByText('Апр')).toBeInTheDocument();
+    expect(screen.getByText(/earnings trend/i)).toBeInTheDocument();
+    expect(screen.getByText(/last 7 months/i)).toBeInTheDocument();
+    expect(screen.getByText('Oct')).toBeInTheDocument();
+    expect(screen.getByText('Apr')).toBeInTheDocument();
   });
 
-  it('показывает AI-прогноз с потенциалом', () => {
+  it('shows AI forecast with potential', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText(/ai-прогноз/i)).toBeInTheDocument();
-    expect(screen.getByText(/общий потенциал/i)).toBeInTheDocument();
-    expect(screen.getByText(/нереализованный доход/i)).toBeInTheDocument();
+    expect(screen.getByText(/ai forecast/i)).toBeInTheDocument();
+    expect(screen.getByText(/total potential/i)).toBeInTheDocument();
+    expect(screen.getByText(/unrealized revenue/i)).toBeInTheDocument();
   });
 
-  it('показывает доход по продуктам', () => {
+  it('shows revenue by product', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText(/доход по продуктам/i)).toBeInTheDocument();
+    expect(screen.getByText(/revenue by product/i)).toBeInTheDocument();
   });
 
-  it('показывает рейтинг конверсии', () => {
+  it('shows best conversion ranking', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText(/лучшая конверсия/i)).toBeInTheDocument();
+    expect(screen.getByText(/best conversion/i)).toBeInTheDocument();
   });
 
-  it('показывает таблицу детализации продуктов', () => {
+  it('shows product breakdown table', () => {
     renderWithProviders(<Analytics />);
-
-    expect(screen.getByText(/детализация по продуктам/i)).toBeInTheDocument();
-    // Продукт в таблице и в графике дохода
-    expect(screen.getAllByText('Notion-система для фрилансера').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/product breakdown/i)).toBeInTheDocument();
+    expect(screen.getAllByText('Notion System for Freelancers').length).toBeGreaterThanOrEqual(1);
   });
 });

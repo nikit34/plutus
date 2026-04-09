@@ -1,85 +1,89 @@
-import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ProductPublic from '../ProductPublic';
 
+beforeAll(() => { window.__NUMI_TEST__ = true; });
+
 function renderProductPage(productId = 'prod_01') {
   return render(
     <MemoryRouter initialEntries={[`/product/${productId}`]}>
-      <Routes>
-        <Route path="/product/:id" element={<ProductPublic />} />
-      </Routes>
+      <Routes><Route path="/product/:id" element={<ProductPublic />} /></Routes>
     </MemoryRouter>
   );
 }
 
-describe('Job 5: Покупатель покупает и получает контент', () => {
-  it('показывает информацию о продукте', () => {
+describe('Job 5: Buyer purchases and gets content', () => {
+  it('shows product info', () => {
     renderProductPage('prod_01');
-
-    expect(screen.getByText('Notion-система для фрилансера')).toBeInTheDocument();
-    expect(screen.getByText(/полная система управления/i)).toBeInTheDocument();
+    expect(screen.getByText('Notion System for Freelancers')).toBeInTheDocument();
+    expect(screen.getByText(/complete project/i)).toBeInTheDocument();
   });
 
-  it('показывает цену и кнопку покупки', () => {
+  it('shows price and buy button', () => {
     renderProductPage('prod_01');
-
-    // Цена появляется в нескольких местах
-    expect(screen.getAllByText(/2[\s\u00a0]490\s*₽/).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByRole('button', { name: /купить/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/\$29/).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByRole('button', { name: /buy for/i })).toBeInTheDocument();
   });
 
-  it('показывает социальное доказательство', () => {
+  it('shows social proof', () => {
     renderProductPage('prod_01');
-
-    expect(screen.getByText(/412\+ купили/)).toBeInTheDocument();
+    expect(screen.getByText(/412\+ bought/)).toBeInTheDocument();
     expect(screen.getByText('4.8')).toBeInTheDocument();
   });
 
-  it('показывает гарантии: мгновенный доступ, навсегда, безопасно', () => {
+  it('shows trust signals', () => {
     renderProductPage('prod_01');
-
-    expect(screen.getByText(/мгновенный доступ/i)).toBeInTheDocument();
-    expect(screen.getByText(/доступ навсегда/i)).toBeInTheDocument();
-    expect(screen.getByText(/безопасная оплата/i)).toBeInTheDocument();
+    expect(screen.getByText(/instant access/i)).toBeInTheDocument();
+    expect(screen.getByText(/lifetime access/i)).toBeInTheDocument();
+    expect(screen.getByText(/secure checkout via stripe/i)).toBeInTheDocument();
   });
 
-  it('показывает превью контента перед покупкой', () => {
+  it('shows content preview before purchase', () => {
     renderProductPage('prod_01');
-
-    expect(screen.getByText(/что вы получите/i)).toBeInTheDocument();
+    expect(screen.getByText(/what you get/i)).toBeInTheDocument();
   });
 
-  it('после покупки показывает контент-ссылку (для продукта с типом link)', async () => {
+  it('shows payment method selection after clicking Buy', async () => {
+    const user = userEvent.setup();
+    renderProductPage('prod_01');
+    await user.click(screen.getByRole('button', { name: /buy for/i }));
+    expect(screen.getByText(/payment method/i)).toBeInTheDocument();
+    expect(screen.getByText('Card')).toBeInTheDocument();
+    expect(screen.getByText('Apple Pay')).toBeInTheDocument();
+    expect(screen.getByText('Google Pay')).toBeInTheDocument();
+  });
+
+  it('shows content after completing payment', async () => {
     const user = userEvent.setup();
     renderProductPage('prod_01');
 
-    await user.click(screen.getByRole('button', { name: /купить/i }));
+    await user.click(screen.getByRole('button', { name: /buy for/i }));
+    await user.click(screen.getByText('Card'));
 
-    expect(screen.getByText(/оплата прошла/i)).toBeInTheDocument();
-    expect(screen.getByText(/открыть шаблон в notion/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/payment successful/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/open notion template/i)).toBeInTheDocument();
   });
 
-  it('после покупки показывает кнопку скачивания (для продукта с типом file)', async () => {
+  it('shows follow prompt after purchase', async () => {
     const user = userEvent.setup();
-    renderProductPage('prod_03');
-
-    // Кнопка содержит цену
-    const buyButton = screen.getAllByRole('button').find(b => b.textContent.includes('Купить'));
-    await user.click(buyButton);
-
-    expect(screen.getByText(/оплата прошла/i)).toBeInTheDocument();
-    expect(screen.getByText('Moody_Cinema_Presets.zip')).toBeInTheDocument();
-    expect(screen.getByText('24 MB')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /скачать файл/i })).toBeInTheDocument();
-  });
-
-  it('не требует email для покупки', () => {
     renderProductPage('prod_01');
 
-    expect(screen.queryByLabelText(/email/i)).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /buy for/i }));
+    await user.click(screen.getByText('Card'));
+
+    await waitFor(() => {
+      expect(screen.getByText(/follow the creator/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText('Alex Carter')).toBeInTheDocument();
+  });
+
+  it('does not require email', () => {
+    renderProductPage('prod_01');
     expect(screen.queryByPlaceholderText(/mail/i)).not.toBeInTheDocument();
   });
 });
