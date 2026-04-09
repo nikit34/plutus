@@ -38,15 +38,15 @@ describe('Job: Собрать аудиторию', () => {
       expect(screen.getByText('Алексей Петров')).toBeInTheDocument();
     });
 
-    it('показывает кнопку подписки в Telegram', async () => {
+    it('показывает кнопку подписки со ссылкой креатора', async () => {
       const user = userEvent.setup();
       renderProductPage('prod_01');
 
       await user.click(screen.getByRole('button', { name: /купить/i }));
 
-      const tgLink = screen.getByText(/подписаться в telegram/i);
-      expect(tgLink).toBeInTheDocument();
-      expect(tgLink.closest('a').getAttribute('href')).toContain('t.me/');
+      const link = screen.getByText(/подписаться/i);
+      expect(link).toBeInTheDocument();
+      expect(link.closest('a').getAttribute('href')).toBeTruthy();
     });
 
     it('показывает количество подписчиков', async () => {
@@ -73,19 +73,25 @@ describe('Job: Собрать аудиторию', () => {
       expect(screen.getByText(/\+12\.4%/)).toBeInTheDocument();
     });
 
-    it('показывает Telegram-канал', () => {
+    it('показывает название канала', () => {
       renderWithProviders(<Dashboard />);
 
-      expect(screen.getByText(/@alexcreator/)).toBeInTheDocument();
+      expect(screen.getByText(/telegram/i)).toBeInTheDocument();
     });
   });
 
-  describe('Настройки — Telegram-канал', () => {
-    it('показывает поле для Telegram-канала', () => {
+  describe('Настройки — ссылка на канал', () => {
+    it('показывает поле для ссылки на канал', () => {
       renderWithProviders(<Settings />);
 
-      expect(screen.getByText(/telegram-канал/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText(/@username/i)).toBeInTheDocument();
+      expect(screen.getByText(/ссылка на канал/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/t\.me/i)).toBeInTheDocument();
+    });
+
+    it('показывает поле для названия канала', () => {
+      renderWithProviders(<Settings />);
+
+      expect(screen.getByPlaceholderText(/название/i)).toBeInTheDocument();
     });
 
     it('объясняет зачем нужен канал', () => {

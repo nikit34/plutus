@@ -120,7 +120,7 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="text-2xl font-bold">{CREATOR.subscribers.toLocaleString('ru-RU')}</div>
-            <div className="text-xs text-text-tertiary mt-1">подписчиков в {CREATOR.telegramChannel}</div>
+            <div className="text-xs text-text-tertiary mt-1">подписчиков{CREATOR.socialLabel ? ` · ${CREATOR.socialLabel}` : ''}</div>
           </motion.div>
 
           {/* Quick links */}

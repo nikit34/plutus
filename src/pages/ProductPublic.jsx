@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Check,
   Zap,
-  Send,
 } from 'lucide-react';
 import { PRODUCTS, THEMES, CREATOR, formatPrice } from '../data/mockData';
 import { useState } from 'react';
@@ -64,7 +63,7 @@ export default function ProductPublic() {
           </motion.div>
 
           {/* Subscribe to creator */}
-          {CREATOR.telegramChannel && (
+          {CREATOR.socialLink && (
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -82,14 +81,14 @@ export default function ProductPublic() {
                 {CREATOR.name}
               </div>
               <a
-                href={`https://t.me/${CREATOR.telegramChannel.replace('@', '')}`}
+                href={CREATOR.socialLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm no-underline transition-all hover:brightness-110"
-                style={{ background: '#26A5E4', color: '#fff' }}
+                style={{ background: theme.accent, color: '#0a0a0a' }}
               >
-                <Send size={14} />
-                Подписаться в Telegram
+                <ExternalLink size={14} />
+                Подписаться{CREATOR.socialLabel ? ` — ${CREATOR.socialLabel}` : ''}
               </a>
               <div className="text-xs opacity-30 mt-3" style={{ color: theme.text }}>
                 {CREATOR.subscribers}+ подписчиков

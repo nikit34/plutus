@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { User, Bell, Send } from 'lucide-react';
+import { User, Bell, Users } from 'lucide-react';
 import { useStore } from '../data/store';
 import { useState } from 'react';
 
@@ -62,7 +62,7 @@ export default function Settings() {
         </div>
       </motion.div>
 
-      {/* Telegram channel */}
+      {/* Social link for audience */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -70,18 +70,26 @@ export default function Settings() {
         className="p-6 rounded-2xl bg-bg-card border border-border"
       >
         <div className="flex items-center gap-2 mb-5">
-          <Send size={16} className="text-text-secondary" />
-          <h3 className="text-base font-semibold">Telegram-канал</h3>
+          <Users size={16} className="text-text-secondary" />
+          <h3 className="text-base font-semibold">Ссылка на канал</h3>
         </div>
         <p className="text-xs text-text-tertiary mb-3">
           Покупатели увидят предложение подписаться после покупки
         </p>
-        <input
-          type="text"
-          defaultValue={creator.telegramChannel || ''}
-          placeholder="@username или ссылка на канал"
-          className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
-        />
+        <div className="space-y-3">
+          <input
+            type="url"
+            defaultValue={creator.socialLink || ''}
+            placeholder="https://t.me/..., youtube.com/..., instagram.com/..."
+            className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
+          />
+          <input
+            type="text"
+            defaultValue={creator.socialLabel || ''}
+            placeholder="Название: Telegram, YouTube, Instagram..."
+            className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
+          />
+        </div>
       </motion.div>
 
       {/* Notifications */}

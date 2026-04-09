@@ -9,7 +9,8 @@ export const CREATOR = {
   totalSales: 1243,
   conversionRate: 4.7,
   activeProducts: 8,
-  telegramChannel: '@alexcreator',
+  socialLink: 'https://t.me/alexcreator',
+  socialLabel: 'Telegram',
   subscribers: 1847,
   subscribersGrowth: 12.4,
 };
