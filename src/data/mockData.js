@@ -214,6 +214,44 @@ export function formatPrice(amount) {
   }).format(amount);
 }
 
+export const PLATFORM_BENCHMARK_CONVERSION = 2.5; // average conversion across platform
+const PRICE_ELASTICITY = 0.65; // 1% price increase → 0.65% conversion drop
+
+export function generateTip(products) {
+  const withConversion = products
+    .filter((p) => p.status === 'active' && p.views > 0)
+    .map((p) => {
+      const conversion = (p.sales / p.views) * 100;
+      const revenuePerView = (p.revenue / p.views);
+      const headroom = conversion - PLATFORM_BENCHMARK_CONVERSION;
+      return { ...p, conversion, revenuePerView, headroom };
+    })
+    .filter((p) => p.headroom > 0.5)
+    .sort((a, b) => b.headroom - a.headroom);
+
+  if (!withConversion.length) return null;
+
+  const best = withConversion[0];
+  const priceIncreasePct = Math.round(best.headroom / PRICE_ELASTICITY);
+  const newPrice = Math.round(best.price * (1 + priceIncreasePct / 100));
+  const newConversion = best.conversion * (1 - (priceIncreasePct * PRICE_ELASTICITY) / 100);
+  const currentRpv = best.revenuePerView;
+  const newRpv = (newPrice * newConversion) / 100;
+  const monthlyGain = Math.round((newRpv - currentRpv) * best.views / 7 * 30);
+
+  return {
+    product: best,
+    priceIncreasePct,
+    newPrice,
+    currentConversion: best.conversion,
+    newConversion: Math.round(newConversion * 10) / 10,
+    currentRpv: Math.round(currentRpv * 100) / 100,
+    newRpv: Math.round(newRpv * 100) / 100,
+    monthlyGain,
+    benchmark: PLATFORM_BENCHMARK_CONVERSION,
+  };
+}
+
 export function formatNumber(num) {
   if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
   if (num >= 1000) return (num / 1000).toFixed(1) + 'K';

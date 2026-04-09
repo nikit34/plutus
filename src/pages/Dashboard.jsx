@@ -14,10 +14,12 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../data/store';
-import { formatPrice, formatNumber, ACTIVITY_FEED, TODAY_STATS, CREATOR } from '../data/mockData';
+import { formatPrice, formatNumber, ACTIVITY_FEED, TODAY_STATS, CREATOR, generateTip } from '../data/mockData';
+import Tooltip from '../components/Tooltip';
 
 export default function Dashboard() {
-  const { creator } = useStore();
+  const { creator, products } = useStore();
+  const tip = generateTip(products);
 
   return (
     <div className="space-y-6">
@@ -48,21 +50,32 @@ export default function Dashboard() {
         </motion.div>
 
         <div className="space-y-4">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="p-5 rounded-2xl bg-bg-card border border-border relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="relative">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-gold-dim border border-gold/10 flex items-center justify-center">
-                  <Sparkles size={12} className="text-gold" />
+          {tip && (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="p-5 rounded-2xl bg-bg-card border border-border relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-7 h-7 rounded-lg bg-gold-dim border border-gold/10 flex items-center justify-center">
+                    <Sparkles size={12} className="text-gold" />
+                  </div>
+                  <span className="text-sm font-semibold">Tip of the day</span>
+                  <Tooltip>
+                    <div className="space-y-1.5">
+                      <div><span className="text-text-primary font-medium">{tip.product.title}</span></div>
+                      <div>Current conversion: <span className="text-text-primary font-medium">{tip.currentConversion.toFixed(1)}%</span> (platform avg: {tip.benchmark}%)</div>
+                      <div>Current rev/view: <span className="text-text-primary font-medium">${tip.currentRpv}</span></div>
+                      <div>After +{tip.priceIncreasePct}% price: conversion drops to ~{tip.newConversion}%, but rev/view rises to <span className="text-gold font-medium">${tip.newRpv}</span></div>
+                      <div className="pt-1 border-t border-border text-text-tertiary">Higher revenue per view = more money from the same traffic</div>
+                    </div>
+                  </Tooltip>
                 </div>
-                <span className="text-sm font-semibold">Tip of the day</span>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  Raise price on <span className="text-text-primary font-medium">{tip.product.title}</span> by {tip.priceIncreasePct}% ({formatPrice(tip.product.price)} → {formatPrice(tip.newPrice)}) — {tip.currentConversion.toFixed(1)}% conversion supports it.
+                </p>
+                <div className="mt-3 text-xs font-semibold text-gold">Forecast: +{formatPrice(tip.monthlyGain)}/mo</div>
               </div>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Raise price on Lightroom presets by 25% — 3.6% conversion supports it.
-              </p>
-              <div className="mt-3 text-xs font-semibold text-gold">Forecast: +$560/mo</div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }} className="p-5 rounded-2xl bg-bg-card border border-border">
             <div className="flex items-center justify-between mb-3">

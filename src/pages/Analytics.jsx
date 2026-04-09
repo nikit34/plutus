@@ -1,12 +1,14 @@
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowDownRight, Sparkles, DollarSign, ShoppingCart, Eye, TrendingUp, Zap, Target } from 'lucide-react';
 import { useStore } from '../data/store';
-import { formatPrice, formatNumber, EARNINGS_HISTORY } from '../data/mockData';
+import { formatPrice, formatNumber, EARNINGS_HISTORY, generateTip } from '../data/mockData';
+import Tooltip from '../components/Tooltip';
 
 export default function Analytics() {
   const { products, totalEarnings, totalSales, totalPotential } = useStore();
   const totalViews = products.reduce((sum, p) => sum + p.views, 0);
-  const avgConversion = products.length ? (products.reduce((sum, p) => sum + p.conversionRate, 0) / products.length).toFixed(1) : 0;
+  const avgConversion = products.length ? (products.filter(p => p.views > 0).reduce((sum, p) => sum + (p.sales / p.views) * 100, 0) / products.filter(p => p.views > 0).length).toFixed(1) : 0;
+  const tip = generateTip(products);
   const sortedByRevenue = [...products].sort((a, b) => b.revenue - a.revenue);
   const sortedByConversion = [...products].sort((a, b) => b.conversionRate - a.conversionRate);
   const maxEarning = Math.max(...EARNINGS_HISTORY.map((e) => e.amount));
@@ -78,7 +80,18 @@ export default function Analytics() {
               </div>
               <div className="space-y-2.5 pt-2">
                 <InsightRow icon={Zap} text="Unrealized revenue" value={formatPrice(unrealizedRevenue)} color="gold" />
-                <InsightRow icon={Target} text="Tip: raise preset prices" value="+18%" color="purple" />
+                {tip && (
+                  <div className="flex items-center gap-1">
+                    <div className="flex-1"><InsightRow icon={Target} text={`Tip: raise ${tip.product.title.slice(0, 20)} price`} value={`+${tip.priceIncreasePct}%`} color="purple" /></div>
+                    <Tooltip>
+                      <div className="space-y-1.5">
+                        <div>Conversion: <span className="text-text-primary font-medium">{tip.currentConversion.toFixed(1)}%</span> vs {tip.benchmark}% avg</div>
+                        <div>Rev/view: ${tip.currentRpv} → <span className="text-gold font-medium">${tip.newRpv}</span></div>
+                        <div>Est. gain: <span className="text-gold font-medium">+{formatPrice(tip.monthlyGain)}/mo</span></div>
+                      </div>
+                    </Tooltip>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -154,7 +167,7 @@ export default function Analytics() {
                   <td className="text-right px-5 py-4 text-sm">{formatPrice(product.price)}</td>
                   <td className="text-right px-5 py-4 text-sm font-medium">{product.sales}</td>
                   <td className="text-right px-5 py-4 text-sm text-text-secondary">{formatNumber(product.views)}</td>
-                  <td className="text-right px-5 py-4"><span className={`text-sm font-medium ${product.conversionRate >= 3 ? 'text-green' : 'text-text-secondary'}`}>{product.conversionRate}%</span></td>
+                  <td className="text-right px-5 py-4"><span className={`text-sm font-medium ${(product.views > 0 ? (product.sales / product.views * 100) : 0) >= 3 ? 'text-green' : 'text-text-secondary'}`}>{product.views > 0 ? (product.sales / product.views * 100).toFixed(1) : 0}%</span></td>
                   <td className="text-right px-5 py-4 text-sm font-semibold">{formatPrice(product.revenue)}</td>
                   <td className="text-right px-5 py-4">
                     <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${product.trend >= 0 ? 'bg-green-dim text-green' : 'bg-red-dim text-red'}`}>

@@ -64,8 +64,8 @@ function ProductCard({ product, index, onCopyLink, onDelete }) {
   const revenuePercent = Math.min((product.revenue / product.potentialRevenue) * 100, 100);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.06, ease: [0.4, 0, 0.2, 1] }} className="group relative rounded-2xl bg-bg-card border border-border hover:border-border-strong transition-all duration-300 overflow-hidden">
-      <div className="relative h-44 overflow-hidden">
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.06, ease: [0.4, 0, 0.2, 1] }} className="group relative rounded-2xl bg-bg-card border border-border hover:border-border-strong transition-all duration-300">
+      <div className="relative h-44 overflow-hidden rounded-t-2xl">
         <img src={product.image} alt={product.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
         <div className="absolute top-3 left-3">
