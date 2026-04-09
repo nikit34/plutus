@@ -90,8 +90,16 @@ function ProductCard({ product, index, onCopyLink, onDelete }) {
 
       <div className="p-4">
         <Link to={`/edit/${product.id}`} className="block no-underline text-text-primary">
-          <h3 className="font-semibold text-[15px] leading-snug mb-2 line-clamp-1 group-hover:text-gold transition-colors">{product.title}</h3>
+          <h3 className="font-semibold text-[15px] leading-snug mb-1 line-clamp-1 group-hover:text-gold transition-colors">{product.title}</h3>
         </Link>
+        <button
+          onClick={onCopyLink}
+          className="flex items-center gap-1.5 text-[11px] text-text-tertiary hover:text-gold transition-colors mb-3 truncate max-w-full"
+          title="Click to copy"
+        >
+          <Copy size={10} className="flex-shrink-0" />
+          <span className="truncate">{product.link}</span>
+        </button>
         <div className="flex items-center gap-4 text-xs text-text-secondary mb-4">
           <span className="flex items-center gap-1"><Eye size={12} /> {formatNumber(product.views)}</span>
           <span className="flex items-center gap-1"><ShoppingCart size={12} /> {product.sales}</span>
