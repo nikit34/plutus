@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../data/store';
 import { THEMES, formatPrice } from '../data/mockData';
+import SharePanel from '../components/SharePanel';
 
 export default function CreateProduct() {
   const { id } = useParams();
@@ -364,9 +365,9 @@ export default function CreateProduct() {
                       {copied ? 'Скопировано' : 'Копировать'}
                     </button>
                   </div>
-                  <p className="text-xs text-text-tertiary mt-2">
-                    Вставьте ссылку в описание YouTube-видео, Instagram Bio, Telegram-канал и другие площадки
-                  </p>
+                  <div className="mt-3 pt-3 border-t border-green/10">
+                    <SharePanel productTitle={title} productLink={generatedLink} />
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -462,20 +463,6 @@ export default function CreateProduct() {
               </div>
             </div>
 
-            {/* Share hints */}
-            <div className="mt-4 space-y-2">
-              <div className="text-xs text-text-tertiary">Поделитесь ссылкой:</div>
-              <div className="flex gap-2">
-                {['YouTube', 'Instagram', 'Telegram', 'TikTok'].map((platform) => (
-                  <span
-                    key={platform}
-                    className="px-3 py-1.5 rounded-lg bg-bg-card border border-border text-xs text-text-secondary"
-                  >
-                    {platform}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
         </motion.div>
       </div>

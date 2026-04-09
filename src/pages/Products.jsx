@@ -11,8 +11,10 @@ import {
   ShoppingCart,
   Sparkles,
   Trash2,
+  Share2,
   MoreHorizontal,
 } from 'lucide-react';
+import SharePanel from '../components/SharePanel';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useStore } from '../data/store';
@@ -129,6 +131,7 @@ export default function Products() {
 
 function ProductCard({ product, index, onCopyLink, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const theme = THEMES[product.theme] || THEMES.midnight;
   const revenuePercent = Math.min((product.revenue / product.potentialRevenue) * 100, 100);
 
@@ -169,6 +172,13 @@ function ProductCard({ product, index, onCopyLink, onDelete }) {
         {/* Actions overlay */}
         <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
+            onClick={() => setShareOpen(!shareOpen)}
+            className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors"
+            title="Поделиться"
+          >
+            <Share2 size={14} />
+          </button>
+          <button
             onClick={onCopyLink}
             className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors"
             title="Копировать ссылку"
@@ -181,13 +191,6 @@ function ProductCard({ product, index, onCopyLink, onDelete }) {
             title="Редактировать"
           >
             <Pencil size={14} />
-          </Link>
-          <Link
-            to={`/product/${product.id}`}
-            className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors"
-            title="Просмотр"
-          >
-            <ExternalLink size={14} />
           </Link>
           <div className="relative">
             <button
@@ -212,6 +215,16 @@ function ProductCard({ product, index, onCopyLink, onDelete }) {
             )}
           </div>
         </div>
+
+        {/* Share dropdown */}
+        {shareOpen && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setShareOpen(false)} />
+            <div className="absolute bottom-14 right-3 z-20 p-3 rounded-xl bg-bg-card border border-border shadow-xl">
+              <SharePanel productTitle={product.title} productLink={product.link} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Content */}

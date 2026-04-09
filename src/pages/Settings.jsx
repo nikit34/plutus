@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { User, Bell } from 'lucide-react';
+import { User, Bell, Send } from 'lucide-react';
 import { useStore } from '../data/store';
 import { useState } from 'react';
 
@@ -60,6 +60,28 @@ export default function Settings() {
             />
           </div>
         </div>
+      </motion.div>
+
+      {/* Telegram channel */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12 }}
+        className="p-6 rounded-2xl bg-bg-card border border-border"
+      >
+        <div className="flex items-center gap-2 mb-5">
+          <Send size={16} className="text-text-secondary" />
+          <h3 className="text-base font-semibold">Telegram-канал</h3>
+        </div>
+        <p className="text-xs text-text-tertiary mb-3">
+          Покупатели увидят предложение подписаться после покупки
+        </p>
+        <input
+          type="text"
+          defaultValue={creator.telegramChannel || ''}
+          placeholder="@username или ссылка на канал"
+          className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
+        />
       </motion.div>
 
       {/* Notifications */}

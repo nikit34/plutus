@@ -9,6 +9,9 @@ export const CREATOR = {
   totalSales: 1243,
   conversionRate: 4.7,
   activeProducts: 8,
+  telegramChannel: '@alexcreator',
+  subscribers: 1847,
+  subscribersGrowth: 12.4,
 };
 
 export const PRODUCTS = [

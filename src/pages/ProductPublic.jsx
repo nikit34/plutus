@@ -12,8 +12,9 @@ import {
   ArrowLeft,
   Check,
   Zap,
+  Send,
 } from 'lucide-react';
-import { PRODUCTS, THEMES, formatPrice } from '../data/mockData';
+import { PRODUCTS, THEMES, CREATOR, formatPrice } from '../data/mockData';
 import { useState } from 'react';
 
 export default function ProductPublic() {
@@ -61,6 +62,40 @@ export default function ProductPublic() {
           >
             <ContentBlock content={product.content} theme={theme} productTitle={product.title} />
           </motion.div>
+
+          {/* Subscribe to creator */}
+          {CREATOR.telegramChannel && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-6 rounded-2xl p-6 border text-center"
+              style={{
+                background: 'rgba(255,255,255,0.02)',
+                borderColor: 'rgba(255,255,255,0.06)',
+              }}
+            >
+              <div className="text-sm opacity-60 mb-2" style={{ color: theme.text }}>
+                Понравилось? Подпишитесь на автора
+              </div>
+              <div className="text-base font-semibold mb-4" style={{ color: theme.text }}>
+                {CREATOR.name}
+              </div>
+              <a
+                href={`https://t.me/${CREATOR.telegramChannel.replace('@', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm no-underline transition-all hover:brightness-110"
+                style={{ background: '#26A5E4', color: '#fff' }}
+              >
+                <Send size={14} />
+                Подписаться в Telegram
+              </a>
+              <div className="text-xs opacity-30 mt-3" style={{ color: theme.text }}>
+                {CREATOR.subscribers}+ подписчиков
+              </div>
+            </motion.div>
+          )}
 
           {/* Footer */}
           <div className="text-center mt-8">

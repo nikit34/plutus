@@ -10,10 +10,11 @@ import {
   Sparkles,
   Zap,
   ArrowUpRight,
+  Users,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../data/store';
-import { formatPrice, formatNumber, ACTIVITY_FEED, TODAY_STATS } from '../data/mockData';
+import { formatPrice, formatNumber, ACTIVITY_FEED, TODAY_STATS, CREATOR } from '../data/mockData';
 
 export default function Dashboard() {
   const { creator } = useStore();
@@ -98,6 +99,28 @@ export default function Dashboard() {
               </p>
               <div className="mt-3 text-xs font-semibold text-gold">Прогноз: +₽56K/мес</div>
             </div>
+          </motion.div>
+
+          {/* Audience widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.28 }}
+            className="p-5 rounded-2xl bg-bg-card border border-border"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-purple-dim border border-purple/10 flex items-center justify-center">
+                  <Users size={12} className="text-purple" />
+                </div>
+                <span className="text-sm font-semibold">Аудитория</span>
+              </div>
+              <span className="text-xs font-medium text-green bg-green-dim px-2 py-0.5 rounded-full">
+                +{CREATOR.subscribersGrowth}%
+              </span>
+            </div>
+            <div className="text-2xl font-bold">{CREATOR.subscribers.toLocaleString('ru-RU')}</div>
+            <div className="text-xs text-text-tertiary mt-1">подписчиков в {CREATOR.telegramChannel}</div>
           </motion.div>
 
           {/* Quick links */}
