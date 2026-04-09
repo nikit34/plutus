@@ -29,6 +29,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2025-12-01',
     link: 'numi.store/p/notion-freelancer',
+    content: { type: 'link', url: 'https://notion.so/template/freelancer-system', label: 'Открыть шаблон в Notion' },
   },
   {
     id: 'prod_02',
@@ -47,6 +48,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2026-01-15',
     link: 'numi.store/p/youtube-guide',
+    content: { type: 'link', url: 'https://course.numi.store/youtube-guide', label: 'Перейти к курсу' },
   },
   {
     id: 'prod_03',
@@ -65,6 +67,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2026-02-20',
     link: 'numi.store/p/moody-presets',
+    content: { type: 'file', fileName: 'Moody_Cinema_Presets.zip', fileSize: '24 MB' },
   },
   {
     id: 'prod_04',
@@ -83,6 +86,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2026-03-01',
     link: 'numi.store/p/saas-uikit',
+    content: { type: 'file', fileName: 'SaaS_Dashboard_UIKit.fig', fileSize: '18 MB' },
   },
   {
     id: 'prod_05',
@@ -101,6 +105,7 @@ export const PRODUCTS = [
     status: 'active',
     createdAt: '2026-03-10',
     link: 'numi.store/p/typescript-course',
+    content: { type: 'link', url: 'https://course.numi.store/typescript', label: 'Перейти к урокам' },
   },
   {
     id: 'prod_06',
@@ -119,6 +124,7 @@ export const PRODUCTS = [
     status: 'draft',
     createdAt: '2026-03-25',
     link: 'numi.store/p/ig-minimal',
+    content: { type: 'file', fileName: 'IG_Minimal_Templates.zip', fileSize: '56 MB' },
   },
 ];
 

@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Upload,
   Image as ImageIcon,
-  Film,
   X,
   Eye,
   Copy,
@@ -12,6 +11,9 @@ import {
   Sparkles,
   Palette,
   ArrowLeft,
+  Link2,
+  FileDown,
+  FileText,
 } from 'lucide-react';
 import { useStore } from '../data/store';
 import { THEMES, formatPrice } from '../data/mockData';
@@ -28,6 +30,11 @@ export default function CreateProduct() {
   const [theme, setTheme] = useState(existing?.theme || 'midnight');
   const [mediaPreview, setMediaPreview] = useState(existing?.image || null);
   const [mediaType, setMediaType] = useState('image');
+  const [contentType, setContentType] = useState(existing?.content?.type || 'file');
+  const [contentUrl, setContentUrl] = useState(existing?.content?.url || '');
+  const [contentLabel, setContentLabel] = useState(existing?.content?.label || '');
+  const [contentFileName, setContentFileName] = useState(existing?.content?.fileName || '');
+  const [contentText, setContentText] = useState(existing?.content?.body || '');
   const [showPreview, setShowPreview] = useState(false);
   const [linkGenerated, setLinkGenerated] = useState(!!existing);
   const [copied, setCopied] = useState(false);
@@ -197,6 +204,83 @@ export default function CreateProduct() {
                 <span className="text-green">{formatPrice(Number(price) * 0.95)}</span>
                 <span className="text-text-tertiary"> (комиссия 5%)</span>
               </div>
+            )}
+          </div>
+
+          {/* Content for buyer */}
+          <div>
+            <label className="block text-sm font-medium mb-2 text-text-secondary">
+              Контент для покупателя
+            </label>
+            <p className="text-xs text-text-tertiary mb-3">Что получит покупатель после оплаты</p>
+
+            {/* Content type selector */}
+            <div className="flex gap-2 mb-3">
+              {[
+                { key: 'file', icon: FileDown, label: 'Файл' },
+                { key: 'link', icon: Link2, label: 'Ссылка' },
+                { key: 'text', icon: FileText, label: 'Текст' },
+              ].map(({ key, icon: TypeIcon, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setContentType(key)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                    contentType === key
+                      ? 'bg-gold-dim border-gold/20 text-gold'
+                      : 'bg-bg-input border-border text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  <TypeIcon size={14} />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Content inputs based on type */}
+            {contentType === 'file' && (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={contentFileName}
+                  onChange={(e) => setContentFileName(e.target.value)}
+                  placeholder="presets.zip"
+                  className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
+                />
+                <div className="p-4 rounded-xl border-2 border-dashed border-border bg-bg-input flex items-center justify-center gap-3 text-text-tertiary">
+                  <Upload size={16} />
+                  <span className="text-sm">Загрузить файл</span>
+                </div>
+              </div>
+            )}
+
+            {contentType === 'link' && (
+              <div className="space-y-3">
+                <input
+                  type="url"
+                  value={contentUrl}
+                  onChange={(e) => setContentUrl(e.target.value)}
+                  placeholder="https://notion.so/template/... или ссылка на видео"
+                  className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
+                />
+                <input
+                  type="text"
+                  value={contentLabel}
+                  onChange={(e) => setContentLabel(e.target.value)}
+                  placeholder="Текст кнопки: Перейти к курсу"
+                  className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]"
+                />
+              </div>
+            )}
+
+            {contentType === 'text' && (
+              <textarea
+                value={contentText}
+                onChange={(e) => setContentText(e.target.value)}
+                placeholder="Инструкции, коды доступа, ссылки — всё, что увидит покупатель после оплаты..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px] resize-none"
+              />
             )}
           </div>
 

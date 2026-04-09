@@ -4,63 +4,72 @@ import {
   ShoppingCart,
   Shield,
   Download,
+  ExternalLink,
+  FileText,
   Star,
   Users,
   Sparkles,
   ArrowLeft,
   Check,
+  Zap,
 } from 'lucide-react';
-import { PRODUCTS, THEMES, formatPrice, PLATFORM_FEE } from '../data/mockData';
+import { PRODUCTS, THEMES, formatPrice } from '../data/mockData';
 import { useState } from 'react';
 
 export default function ProductPublic() {
   const { id } = useParams();
   const product = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0];
   const theme = THEMES[product.theme] || THEMES.midnight;
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [email, setEmail] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('card');
   const [purchased, setPurchased] = useState(false);
-
-  const handlePurchase = (e) => {
-    e.preventDefault();
-    setPurchased(true);
-  };
 
   if (purchased) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center p-6"
-        style={{ background: theme.bg }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full text-center"
-        >
+      <div className="min-h-screen" style={{ background: theme.bg }}>
+        <div className="max-w-2xl mx-auto px-6 py-16">
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ background: theme.accent + '20' }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center mb-10"
           >
-            <Check size={32} style={{ color: theme.accent }} />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+              style={{ background: theme.accent + '20' }}
+            >
+              <Check size={32} style={{ color: theme.accent }} />
+            </motion.div>
+            <h1 className="font-display text-3xl font-semibold mb-2" style={{ color: theme.text }}>
+              Оплата прошла!
+            </h1>
+            <p className="text-sm opacity-50" style={{ color: theme.text }}>
+              Вот ваш контент — доступ навсегда
+            </p>
           </motion.div>
-          <h1 className="font-display text-3xl font-semibold mb-3" style={{ color: theme.text }}>
-            Покупка успешна!
-          </h1>
-          <p className="text-sm opacity-60 mb-8" style={{ color: theme.text }}>
-            Ссылка для скачивания отправлена на {email}
-          </p>
-          <button
-            className="px-8 py-3 rounded-xl font-semibold text-sm"
-            style={{ background: theme.accent, color: '#0a0a0a' }}
+
+          {/* Content delivery */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="rounded-2xl p-8 border"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              borderColor: 'rgba(255,255,255,0.08)',
+            }}
           >
-            <Download size={16} className="inline mr-2 -mt-0.5" />
-            Скачать сейчас
-          </button>
-        </motion.div>
+            <ContentBlock content={product.content} theme={theme} productTitle={product.title} />
+          </motion.div>
+
+          {/* Footer */}
+          <div className="text-center mt-8">
+            <span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}>
+              <Sparkles size={8} />
+              Powered by Numi
+            </span>
+          </div>
+        </div>
       </div>
     );
   }
@@ -88,7 +97,6 @@ export default function ProductPublic() {
             transition={{ duration: 0.6 }}
             className="col-span-3"
           >
-            {/* Image */}
             <div className="rounded-2xl overflow-hidden mb-8 border border-white/5">
               <img
                 src={product.image}
@@ -135,8 +143,8 @@ export default function ProductPublic() {
             {/* Features */}
             <div className="space-y-3">
               {[
-                'Мгновенная доставка на email',
-                'Доступ навсегда после покупки',
+                'Мгновенный доступ после оплаты',
+                'Доступ навсегда',
                 'Безопасная оплата',
               ].map((feature) => (
                 <div key={feature} className="flex items-center gap-3">
@@ -154,7 +162,7 @@ export default function ProductPublic() {
             </div>
           </motion.div>
 
-          {/* Purchase form */}
+          {/* Purchase card */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -187,104 +195,25 @@ export default function ProductPublic() {
 
                 <div className="h-px my-5" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
-                {!showCheckout ? (
-                  <button
-                    onClick={() => setShowCheckout(true)}
-                    className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110"
-                    style={{ background: theme.accent, color: '#0a0a0a' }}
-                  >
-                    <ShoppingCart size={16} />
-                    Купить сейчас
-                  </button>
-                ) : (
-                  <motion.form
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    onSubmit={handlePurchase}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <label className="block text-xs mb-1.5 opacity-50" style={{ color: theme.text }}>
-                        Email для получения товара
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        placeholder="ivan@mail.com"
-                        className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/5 border border-white/8 placeholder:opacity-30 focus:border-white/20 transition-colors"
-                        style={{ color: theme.text }}
-                      />
-                    </div>
+                {/* What you get */}
+                <div className="mb-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap size={12} style={{ color: theme.accent }} />
+                    <span className="text-xs font-medium opacity-60" style={{ color: theme.text }}>
+                      Что вы получите
+                    </span>
+                  </div>
+                  <ContentPreview content={product.content} theme={theme} />
+                </div>
 
-                    {/* Payment method */}
-                    <div>
-                      <label className="block text-xs mb-2 opacity-50" style={{ color: theme.text }}>
-                        Способ оплаты
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          { key: 'card', label: 'Карта' },
-                          { key: 'sbp', label: 'СБП' },
-                        ].map((m) => (
-                          <button
-                            type="button"
-                            key={m.key}
-                            onClick={() => setPaymentMethod(m.key)}
-                            className="py-2.5 rounded-xl text-xs font-medium border transition-all"
-                            style={{
-                              background: paymentMethod === m.key ? theme.accent + '15' : 'transparent',
-                              borderColor: paymentMethod === m.key ? theme.accent + '40' : 'rgba(255,255,255,0.08)',
-                              color: paymentMethod === m.key ? theme.accent : theme.text,
-                            }}
-                          >
-                            {m.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {paymentMethod === 'card' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                      >
-                        <label className="block text-xs mb-1.5 opacity-50" style={{ color: theme.text }}>
-                          Номер карты
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="0000 0000 0000 0000"
-                          className="w-full px-3 py-2.5 rounded-xl text-sm bg-white/5 border border-white/8 placeholder:opacity-30 focus:border-white/20 transition-colors"
-                          style={{ color: theme.text }}
-                        />
-                        <div className="grid grid-cols-2 gap-2 mt-2">
-                          <input
-                            type="text"
-                            placeholder="MM/YY"
-                            className="px-3 py-2.5 rounded-xl text-sm bg-white/5 border border-white/8 placeholder:opacity-30 focus:border-white/20 transition-colors"
-                            style={{ color: theme.text }}
-                          />
-                          <input
-                            type="text"
-                            placeholder="CVV"
-                            className="px-3 py-2.5 rounded-xl text-sm bg-white/5 border border-white/8 placeholder:opacity-30 focus:border-white/20 transition-colors"
-                            style={{ color: theme.text }}
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all hover:brightness-110"
-                      style={{ background: theme.accent, color: '#0a0a0a' }}
-                    >
-                      Оплатить {formatPrice(product.price)}
-                    </button>
-                  </motion.form>
-                )}
+                <button
+                  onClick={() => setPurchased(true)}
+                  className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110"
+                  style={{ background: theme.accent, color: '#0a0a0a' }}
+                >
+                  <ShoppingCart size={16} />
+                  Купить за {formatPrice(product.price)}
+                </button>
 
                 {/* Trust badges */}
                 <div className="flex items-center justify-center gap-4 mt-5">
@@ -293,13 +222,12 @@ export default function ProductPublic() {
                     Безопасно
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] opacity-30" style={{ color: theme.text }}>
-                    <Download size={11} />
+                    <Zap size={11} />
                     Мгновенно
                   </div>
                 </div>
               </div>
 
-              {/* Powered by Numi */}
               <div className="text-center mt-4">
                 <span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}>
                   <Sparkles size={8} />
@@ -312,4 +240,122 @@ export default function ProductPublic() {
       </div>
     </div>
   );
+}
+
+function ContentPreview({ content, theme }) {
+  if (!content) return null;
+
+  const items = {
+    file: `Файл: ${content.fileName || 'Скачиваемый файл'}`,
+    link: content.label || 'Доступ по ссылке',
+    text: 'Текстовый контент',
+  };
+
+  const icons = {
+    file: Download,
+    link: ExternalLink,
+    text: FileText,
+  };
+
+  const Icon = icons[content.type] || Download;
+
+  return (
+    <div
+      className="flex items-center gap-3 p-3 rounded-xl"
+      style={{ background: theme.accent + '08', border: `1px solid ${theme.accent}15` }}
+    >
+      <Icon size={14} style={{ color: theme.accent }} />
+      <span className="text-sm opacity-70" style={{ color: theme.text }}>
+        {items[content.type]}
+      </span>
+    </div>
+  );
+}
+
+function ContentBlock({ content, theme, productTitle }) {
+  if (!content) {
+    return (
+      <div className="text-center opacity-50" style={{ color: theme.text }}>
+        <p className="text-sm">Контент недоступен</p>
+      </div>
+    );
+  }
+
+  if (content.type === 'file') {
+    return (
+      <div className="text-center">
+        <div
+          className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+          style={{ background: theme.accent + '15' }}
+        >
+          <Download size={24} style={{ color: theme.accent }} />
+        </div>
+        <div className="text-lg font-semibold mb-1" style={{ color: theme.text }}>
+          {content.fileName}
+        </div>
+        {content.fileSize && (
+          <div className="text-xs opacity-40 mb-6" style={{ color: theme.text }}>
+            {content.fileSize}
+          </div>
+        )}
+        <button
+          className="px-8 py-3 rounded-xl font-semibold text-sm inline-flex items-center gap-2 hover:brightness-110 transition-all"
+          style={{ background: theme.accent, color: '#0a0a0a' }}
+        >
+          <Download size={16} />
+          Скачать файл
+        </button>
+      </div>
+    );
+  }
+
+  if (content.type === 'link') {
+    return (
+      <div className="text-center">
+        <div
+          className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+          style={{ background: theme.accent + '15' }}
+        >
+          <ExternalLink size={24} style={{ color: theme.accent }} />
+        </div>
+        <div className="text-lg font-semibold mb-1" style={{ color: theme.text }}>
+          {productTitle}
+        </div>
+        <div className="text-xs opacity-40 mb-6" style={{ color: theme.text }}>
+          Нажмите кнопку, чтобы перейти к контенту
+        </div>
+        <a
+          href={content.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-8 py-3 rounded-xl font-semibold text-sm inline-flex items-center gap-2 hover:brightness-110 transition-all no-underline"
+          style={{ background: theme.accent, color: '#0a0a0a' }}
+        >
+          <ExternalLink size={16} />
+          {content.label || 'Перейти'}
+        </a>
+      </div>
+    );
+  }
+
+  if (content.type === 'text') {
+    return (
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <FileText size={16} style={{ color: theme.accent }} />
+          <span className="text-sm font-semibold" style={{ color: theme.text }}>
+            {productTitle}
+          </span>
+        </div>
+        <div
+          className="text-sm leading-relaxed opacity-80 whitespace-pre-wrap"
+          style={{ color: theme.text }}
+        >
+          {content.body}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
