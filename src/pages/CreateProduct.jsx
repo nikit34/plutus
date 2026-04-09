@@ -157,11 +157,11 @@ export default function CreateProduct() {
             {linkGenerated && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                 <div className="p-4 rounded-xl bg-green-dim border border-green/20">
-                  <div className="flex items-center gap-2 mb-2"><Check size={14} className="text-green" /><span className="text-sm font-medium text-green">Link ready!</span></div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 px-3 py-2 rounded-lg bg-bg-primary/50 text-sm text-text-primary font-mono">https://{generatedLink}</div>
-                    <button onClick={copyLink} className="px-4 py-2 rounded-lg bg-green/20 text-green text-sm font-medium hover:bg-green/30 transition-colors flex items-center gap-2">{copied ? <Check size={14} /> : <Copy size={14} />}{copied ? 'Copied' : 'Copy'}</button>
-                  </div>
+                  <div className="flex items-center gap-2 mb-3"><Check size={14} className="text-green" /><span className="text-sm font-medium text-green">Link ready!</span></div>
+                  <button onClick={copyLink} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-bg-primary/50 hover:bg-bg-primary/70 transition-colors text-left group">
+                    <span className="flex-1 text-sm text-text-primary font-mono truncate">https://{generatedLink}</span>
+                    {copied ? <Check size={14} className="text-green flex-shrink-0" /> : <Copy size={14} className="text-text-tertiary group-hover:text-text-primary flex-shrink-0" />}
+                  </button>
                   <div className="mt-3 pt-3 border-t border-green/10"><SharePanel productTitle={title} productLink={generatedLink} /></div>
                 </div>
               </motion.div>

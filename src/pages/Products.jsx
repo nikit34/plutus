@@ -78,7 +78,6 @@ function ProductCard({ product, index, onCopyLink, onDelete }) {
         </div>
         <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button onClick={() => setShareOpen(!shareOpen)} className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors" title="Share"><Share2 size={14} /></button>
-          <button onClick={onCopyLink} className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors" title="Copy link"><Copy size={14} /></button>
           <Link to={`/edit/${product.id}`} className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors" title="Edit"><Pencil size={14} /></Link>
           <div className="relative">
             <button onClick={() => setMenuOpen(!menuOpen)} className="w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors"><MoreHorizontal size={14} /></button>
