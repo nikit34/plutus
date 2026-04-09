@@ -53,7 +53,7 @@ export default function CreateProduct() {
       updateProduct(id, { title, description, price: Number(price), theme, image: mediaPreview });
       addNotification('Продукт обновлен!');
     } else {
-      const product = addProduct({
+      addProduct({
         title,
         description,
         price: Number(price),

@@ -1,10 +1,5 @@
 import { motion } from 'framer-motion';
 import {
-  TrendingUp,
-  DollarSign,
-  BarChart3,
-  Eye,
-  ShoppingCart,
   ArrowUpRight,
   ArrowDownRight,
   Sparkles,
@@ -13,8 +8,7 @@ import { useStore } from '../data/store';
 import { formatPrice, formatNumber, EARNINGS_HISTORY } from '../data/mockData';
 
 export default function Analytics() {
-  const { products, totalEarnings, totalSales, totalPotential } = useStore();
-  const totalViews = products.reduce((sum, p) => sum + p.views, 0);
+  const { products } = useStore();
 
   const sortedByRevenue = [...products].sort((a, b) => b.revenue - a.revenue);
   const sortedByConversion = [...products].sort((a, b) => b.conversionRate - a.conversionRate);

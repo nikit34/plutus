@@ -8,15 +8,12 @@ import {
   Eye,
   ShoppingCart,
   Sparkles,
-  MoreHorizontal,
 } from 'lucide-react';
 import { formatPrice, formatNumber, THEMES } from '../data/mockData';
 import { useStore } from '../data/store';
-import { useState } from 'react';
 
 export default function ProductCardDashboard({ product, index = 0 }) {
   const { addNotification } = useStore();
-  const [showMenu, setShowMenu] = useState(false);
   const theme = THEMES[product.theme] || THEMES.midnight;
   const revenuePercent = Math.min((product.revenue / product.potentialRevenue) * 100, 100);
 
