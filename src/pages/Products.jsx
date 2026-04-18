@@ -7,12 +7,22 @@ import { formatPrice, formatNumber, THEMES } from '../data/mockData';
 import SharePanel from '../components/SharePanel';
 
 export default function Products() {
-  const { products, deleteProduct, addNotification } = useStore();
+  const { products, productsLoaded, deleteProduct, addNotification } = useStore();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const filtered = products
     .filter((p) => { if (filter === 'active') return p.status === 'active'; if (filter === 'draft') return p.status === 'draft'; return true; })
     .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this product?')) return;
+    try {
+      await deleteProduct(id);
+      addNotification('Product deleted');
+    } catch (err) {
+      addNotification(err.message || 'Could not delete', 'error');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -42,14 +52,14 @@ export default function Products() {
         {filtered.map((product, i) => (
           <ProductCard key={product.id} product={product} index={i}
             onCopyLink={() => { navigator.clipboard.writeText('https://' + product.link); addNotification('Link copied!'); }}
-            onDelete={() => { deleteProduct(product.id); addNotification('Product deleted'); }}
+            onDelete={() => handleDelete(product.id)}
           />
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {productsLoaded && filtered.length === 0 && (
         <div className="text-center py-20">
-          <div className="text-text-tertiary text-sm mb-4">No products found</div>
+          <div className="text-text-tertiary text-sm mb-4">{products.length === 0 ? 'No products yet' : 'No products match'}</div>
           <Link to="/create" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all no-underline"><Plus size={16} />Create first product</Link>
         </div>
       )}

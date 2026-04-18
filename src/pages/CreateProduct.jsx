@@ -1,64 +1,122 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Upload, Image as ImageIcon, X, Eye, Copy, Check, Sparkles, Palette, ArrowLeft, Link2, FileDown, FileText, CreditCard } from 'lucide-react';
+import { Upload, Image as ImageIcon, X, Eye, Copy, Check, Sparkles, Palette, ArrowLeft, Link2, FileDown, FileText, CreditCard, Loader2 } from 'lucide-react';
 import { useStore } from '../data/store';
 import { THEMES, formatPrice } from '../data/mockData';
+import { productsApi, API_BASE } from '../api/client';
 import SharePanel from '../components/SharePanel';
 
 export default function CreateProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products, addProduct, updateProduct, addNotification } = useStore();
-  const existing = id ? products.find((p) => p.id === id) : null;
+  const { addProduct, updateProduct, addNotification } = useStore();
 
-  const [title, setTitle] = useState(existing?.title || '');
-  const [description, setDescription] = useState(existing?.description || '');
-  const [price, setPrice] = useState(existing?.price || '');
-  const [theme, setTheme] = useState(existing?.theme || 'midnight');
-  const [mediaPreview, setMediaPreview] = useState(existing?.image || null);
+  const [loading, setLoading] = useState(!!id);
+  const [saving, setSaving] = useState(false);
+  const [existing, setExisting] = useState(null);
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [theme, setTheme] = useState('midnight');
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [mediaFile, setMediaFile] = useState(null);
   const [mediaType, setMediaType] = useState('image');
-  const [contentType, setContentType] = useState(existing?.content?.type || 'file');
-  const [contentUrl, setContentUrl] = useState(existing?.content?.url || '');
-  const [contentLabel, setContentLabel] = useState(existing?.content?.label || '');
-  const [contentFileName, setContentFileName] = useState(existing?.content?.fileName || '');
-  const [contentText, setContentText] = useState(existing?.content?.body || '');
-  const [paymentLink, setPaymentLink] = useState(existing?.paymentLink || '');
+  const [contentType, setContentType] = useState('file');
+  const [contentUrl, setContentUrl] = useState('');
+  const [contentLabel, setContentLabel] = useState('');
+  const [contentFileName, setContentFileName] = useState('');
+  const [contentFile, setContentFile] = useState(null);
+  const [contentText, setContentText] = useState('');
+  const [paymentLink, setPaymentLink] = useState('');
   const [showPreview, setShowPreview] = useState(false);
-  const [linkGenerated, setLinkGenerated] = useState(!!existing);
+  const [generatedLink, setGeneratedLink] = useState('');
   const [copied, setCopied] = useState(false);
-  const fileRef = useRef(null);
+  const coverRef = useRef(null);
+  const contentFileRef = useRef(null);
   const selectedTheme = THEMES[theme];
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    productsApi.get(id)
+      .then(({ product }) => {
+        setExisting(product);
+        setTitle(product.title);
+        setDescription(product.description || '');
+        setPrice(product.price);
+        setTheme(product.theme);
+        setMediaPreview(product.image || null);
+        setContentType(product.content?.type || 'file');
+        setContentUrl(product.content?.url || '');
+        setContentLabel(product.content?.label || '');
+        setContentFileName(product.content?.fileName || '');
+        setContentText(product.content?.body || '');
+        setPaymentLink(product.stripePaymentLink || '');
+        setGeneratedLink(product.link);
+      })
+      .catch((err) => addNotification(err.message || 'Failed to load product', 'error'))
+      .finally(() => setLoading(false));
+  }, [id, addNotification]);
 
   const handleMediaUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setMediaFile(file);
     setMediaPreview(URL.createObjectURL(file));
     setMediaType(file.type.startsWith('video') ? 'video' : 'image');
   };
 
-  const handleSubmit = () => {
-    if (!title || !price) { addNotification('Fill in title and price', 'error'); return; }
-    const trimmedLink = paymentLink.trim() || null;
-    if (existing) {
-      updateProduct(id, { title, description, price: Number(price), theme, image: mediaPreview, paymentLink: trimmedLink });
-      addNotification('Product updated!');
-    } else {
-      addProduct({ title, description, price: Number(price), theme, image: mediaPreview || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop', paymentLink: trimmedLink });
-      addNotification('Product created!');
-    }
-    setLinkGenerated(true);
+  const handleContentFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setContentFile(file);
+    setContentFileName(file.name);
   };
 
-  const slug = title.toLowerCase().replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '-').slice(0, 30) || 'product';
-  const generatedLink = `nikit34.github.io/plutus/product/${existing?.id || slug}`;
+  const handleSubmit = async () => {
+    if (!title || !price) { addNotification('Fill in title and price', 'error'); return; }
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append('title', title);
+      fd.append('description', description);
+      fd.append('price', String(price));
+      fd.append('theme', theme);
+      fd.append('status', 'active');
+      fd.append('contentType', contentType);
+      if (contentType === 'link') { fd.append('contentUrl', contentUrl); fd.append('contentLabel', contentLabel); }
+      if (contentType === 'text') fd.append('contentBody', contentText);
+      if (paymentLink.trim()) fd.append('stripePaymentLink', paymentLink.trim());
+      if (mediaFile) fd.append('cover', mediaFile);
+      if (contentType === 'file' && contentFile) fd.append('contentFile', contentFile);
+
+      const product = existing
+        ? await updateProduct(existing.id, fd)
+        : await addProduct(fd);
+
+      setGeneratedLink(product.link);
+      addNotification(existing ? 'Product updated!' : 'Product created!');
+      if (!existing) navigate(`/edit/${product.id}`, { replace: true });
+    } catch (err) {
+      addNotification(err.message || 'Save failed', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const copyLink = () => {
-    navigator.clipboard.writeText('https://' + generatedLink);
+    const url = generatedLink.startsWith('http') ? generatedLink : 'https://' + generatedLink;
+    navigator.clipboard.writeText(url);
     setCopied(true);
     addNotification('Link copied!');
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (loading) {
+    return <div className="flex items-center justify-center py-24 text-text-tertiary gap-2"><Loader2 size={16} className="animate-spin" />Loading…</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -79,21 +137,21 @@ export default function CreateProduct() {
 
           <div>
             <label className="block text-sm font-medium mb-2 text-text-secondary">Description</label>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe your product in detail — what's included, who it's for, what results buyers will get..." rows={5} className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px] resize-none" />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe your product in detail..." rows={5} className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px] resize-none" />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2 text-text-secondary">Cover image or video</label>
-            <input ref={fileRef} type="file" accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
+            <input ref={coverRef} type="file" accept="image/*,video/*" onChange={handleMediaUpload} className="hidden" />
             {mediaPreview ? (
               <div className="relative rounded-xl overflow-hidden border border-border">
                 {mediaType === 'video' ? <video src={mediaPreview} className="w-full h-48 object-cover" /> : <img src={mediaPreview} className="w-full h-48 object-cover" alt="" />}
-                <button onClick={() => setMediaPreview(null)} className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-red-dim transition-colors"><X size={14} /></button>
+                <button onClick={() => { setMediaPreview(null); setMediaFile(null); }} className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-bg-primary/80 backdrop-blur-sm border border-border flex items-center justify-center hover:bg-red-dim transition-colors"><X size={14} /></button>
               </div>
             ) : (
-              <button onClick={() => fileRef.current?.click()} className="w-full h-48 rounded-xl border-2 border-dashed border-border hover:border-gold/30 bg-bg-input flex flex-col items-center justify-center gap-3 transition-colors group cursor-pointer">
+              <button onClick={() => coverRef.current?.click()} className="w-full h-48 rounded-xl border-2 border-dashed border-border hover:border-gold/30 bg-bg-input flex flex-col items-center justify-center gap-3 transition-colors group cursor-pointer">
                 <div className="w-12 h-12 rounded-xl bg-bg-elevated flex items-center justify-center group-hover:bg-gold-dim transition-colors"><Upload size={20} className="text-text-tertiary group-hover:text-gold transition-colors" /></div>
-                <div className="text-center"><div className="text-sm font-medium text-text-secondary">Drop a file or click to upload</div><div className="text-xs text-text-tertiary mt-1">JPG, PNG, GIF, MP4 up to 50MB</div></div>
+                <div className="text-center"><div className="text-sm font-medium text-text-secondary">Drop a file or click to upload</div><div className="text-xs text-text-tertiary mt-1">JPG, PNG, GIF, MP4 up to 100MB</div></div>
               </button>
             )}
           </div>
@@ -117,24 +175,10 @@ export default function CreateProduct() {
               <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-bg-elevated text-text-tertiary">optional</span>
             </label>
             <p className="text-xs text-text-tertiary mb-3">
-              Paste a Stripe Payment Link to accept real payments. Create one at{' '}
-              <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">dashboard.stripe.com/payment-links</a>
-              . In Stripe, set &ldquo;After payment → Custom URL&rdquo; to{' '}
-              <code className="text-text-secondary">{`https://${generatedLink}?success=true`}</code>{' '}
-              so the buyer is sent back here.
+              Optional — if you want Stripe to host checkout directly. If left empty, Plutus creates a Checkout Session automatically using your connected account.
             </p>
-            <input
-              type="url"
-              value={paymentLink}
-              onChange={(e) => setPaymentLink(e.target.value)}
-              placeholder="https://buy.stripe.com/test_..."
-              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px] font-mono"
-            />
-            {paymentLink && (
-              <div className="mt-2 flex items-center gap-1.5 text-xs text-green">
-                <Check size={12} />Real Stripe checkout enabled
-              </div>
-            )}
+            <input type="url" value={paymentLink} onChange={(e) => setPaymentLink(e.target.value)} placeholder="https://buy.stripe.com/test_..." className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px] font-mono" />
+            {paymentLink && (<div className="mt-2 flex items-center gap-1.5 text-xs text-green"><Check size={12} />Custom Stripe link enabled</div>)}
           </div>
 
           <div>
@@ -149,8 +193,11 @@ export default function CreateProduct() {
             </div>
             {contentType === 'file' && (
               <div className="space-y-3">
-                <input type="text" value={contentFileName} onChange={(e) => setContentFileName(e.target.value)} placeholder="presets.zip" className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]" />
-                <div className="p-4 rounded-xl border-2 border-dashed border-border bg-bg-input flex items-center justify-center gap-3 text-text-tertiary"><Upload size={16} /><span className="text-sm">Upload file</span></div>
+                <input ref={contentFileRef} type="file" onChange={handleContentFileUpload} className="hidden" />
+                <button onClick={() => contentFileRef.current?.click()} type="button" className="w-full p-4 rounded-xl border-2 border-dashed border-border hover:border-gold/30 bg-bg-input flex items-center justify-center gap-3 text-text-tertiary transition-colors">
+                  <Upload size={16} />
+                  <span className="text-sm">{contentFileName ? contentFileName : 'Upload file'}</span>
+                </button>
               </div>
             )}
             {contentType === 'link' && (
@@ -177,17 +224,20 @@ export default function CreateProduct() {
           </div>
 
           <div className="flex items-center gap-3 pt-2">
-            <button onClick={handleSubmit} className="flex-1 py-3 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all">{existing ? 'Save Changes' : 'Create Product'}</button>
+            <button onClick={handleSubmit} disabled={saving} className="flex-1 py-3 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+              {saving && <Loader2 size={14} className="animate-spin" />}
+              {existing ? 'Save Changes' : 'Create Product'}
+            </button>
             <button onClick={() => setShowPreview(!showPreview)} className="px-5 py-3 rounded-xl bg-bg-card border border-border text-sm font-medium hover:bg-bg-elevated transition-colors flex items-center gap-2"><Eye size={14} />Preview</button>
           </div>
 
           <AnimatePresence>
-            {linkGenerated && (
+            {generatedLink && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                 <div className="p-4 rounded-xl bg-green-dim border border-green/20">
                   <div className="flex items-center gap-2 mb-3"><Check size={14} className="text-green" /><span className="text-sm font-medium text-green">Link ready!</span></div>
                   <button onClick={copyLink} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-bg-primary/50 hover:bg-bg-primary/70 transition-colors text-left group">
-                    <span className="flex-1 text-sm text-text-primary font-mono truncate">https://{generatedLink}</span>
+                    <span className="flex-1 text-sm text-text-primary font-mono truncate">{generatedLink}</span>
                     {copied ? <Check size={14} className="text-green flex-shrink-0" /> : <Copy size={14} className="text-text-tertiary group-hover:text-text-primary flex-shrink-0" />}
                   </button>
                   <div className="mt-3 pt-3 border-t border-green/10"><SharePanel productTitle={title} productLink={generatedLink} /></div>

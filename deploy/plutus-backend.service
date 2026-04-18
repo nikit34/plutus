@@ -1,0 +1,27 @@
+[Unit]
+Description=Plutus API (Node/Express)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=plutus
+Group=plutus
+WorkingDirectory=/opt/plutus/backend
+EnvironmentFile=/opt/plutus/backend/.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=5
+# Standard output goes to journalctl: `journalctl -u plutus-backend -f`
+StandardOutput=journal
+StandardError=journal
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/plutus/backend/storage
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

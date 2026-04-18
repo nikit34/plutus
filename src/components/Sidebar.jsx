@@ -84,15 +84,19 @@ export default function Sidebar() {
         </NavLink>
       </div>
 
-      {!collapsed && (
+      {!collapsed && creator && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mx-3 mb-3 p-3 rounded-xl bg-bg-elevated border border-border">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center text-sm font-semibold text-gold">
-              {creator.name.split(' ').map(n => n[0]).join('')}
-            </div>
+            {creator.avatar ? (
+              <img src={creator.avatar} alt="" className="w-9 h-9 rounded-full object-cover" />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center text-sm font-semibold text-gold">
+                {(creator.name || creator.email || '?').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">{creator.name}</div>
-              <div className="text-xs text-text-tertiary">{creator.plan} plan</div>
+              <div className="text-sm font-medium truncate">{creator.name || creator.email}</div>
+              <div className="text-xs text-text-tertiary">{creator.plan || 'Free'} plan</div>
             </div>
           </div>
         </motion.div>

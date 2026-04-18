@@ -1,35 +1,55 @@
 # Plutus
 
-Sell digital products: courses, templates, presets, guides. Get a link — share — earn.
+Creator commerce — sell digital products (files, links, text) with Stripe Checkout, Stripe Connect payouts, analytics, and email receipts.
 
-Stack: React + Vite + Tailwind. Payments via Stripe Payment Links. Deployed to GitHub Pages at [nikit34.github.io/plutus](https://nikit34.github.io/plutus/).
+## Quick start
 
-## Development
-
-```sh
+```bash
+# Backend (Node + Postgres + Stripe + Resend)
+cd backend
+docker compose up -d                 # Postgres on :5432
+cp .env.example .env                 # fill JWT_SECRET, STRIPE_*, RESEND_API_KEY
 npm install
-npm run dev
-npm test
-npm run build
+npm run migrate
+npm run dev                          # :4000
+
+# Frontend (Vite + React) — separate terminal, from repo root
+cp .env.example .env.local
+npm install
+npm run dev                          # :5173
 ```
 
-## Stripe
+Open http://localhost:5173, create an account, create a product, open its public link in an incognito window, and buy with the Stripe test card `4242 4242 4242 4242`.
 
-Each product can optionally hold a Stripe Payment Link. When set, the public product page "Buy" button redirects to Stripe Checkout instead of the mock flow. Create links at [dashboard.stripe.com/payment-links](https://dashboard.stripe.com/payment-links).
+For the Stripe webhook locally:
+```bash
+stripe listen --forward-to http://localhost:4000/api/webhooks/stripe
+# copy the whsec_... into backend/.env → STRIPE_WEBHOOK_SECRET
+```
 
----
+## Structure
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+```
+backend/    # Express API, Postgres migrations, Stripe + Resend
+src/        # React SPA (Vite)
+deploy/     # nginx.conf, systemd unit, production README
+```
 
-Currently, two official plugins are available:
+Production deployment for `plutus.firstmessage.ru` is documented in `deploy/README.md`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Email/password auth (JWT)
+- Digital products: file / external link / text content, cover image upload
+- Public storefront at `/product/:slug`
+- Stripe Checkout (with optional custom Stripe Payment Link per product)
+- Stripe Connect Express onboarding + payouts
+- Webhook-driven purchase recording, one-time/lifetime download tokens
+- Resend emails: welcome, purchase receipt with access link, sale notification, payout confirmation
+- Wallet: balance, withdraw, payout history
+- Dashboard + analytics: today's sales/earnings/views, 7-month trend, per-product stats
+- Settings: avatar, social channel, email notification toggles, password change
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+React 19 · Vite 8 · Tailwind 4 · Framer Motion · Express 4 · pg · bcrypt · multer · JWT · Stripe · Resend · Postgres 16

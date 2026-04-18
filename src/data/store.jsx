@@ -1,67 +1,118 @@
-import { createContext, useContext, useState, useCallback } from 'react';
-import { PRODUCTS as INITIAL_PRODUCTS, CREATOR } from './mockData';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { productsApi, notificationsApi, walletApi, analyticsApi, settingsApi } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 
 const StoreContext = createContext(null);
 
 export function StoreProvider({ children }) {
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
-  const [creator] = useState(CREATOR);
+  const { user, status, setUser } = useAuth();
+  const [products, setProducts] = useState([]);
+  const [productsLoaded, setProductsLoaded] = useState(false);
+  const [toasts, setToasts] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [walletSummary, setWalletSummary] = useState(null);
+  const [dashboard, setDashboard] = useState(null);
+  const toastIdRef = useRef(0);
 
-  const addProduct = useCallback((product) => {
-    const id = 'prod_' + String(products.length + 1).padStart(2, '0');
-    const newProduct = {
-      ...product,
-      id,
-      sales: 0,
-      revenue: 0,
-      views: 0,
-      conversionRate: 0,
-      potentialRevenue: estimateRevenue(product.price),
-      trend: 0,
-      status: 'active',
-      createdAt: new Date().toISOString().split('T')[0],
-      link: 'nikit34.github.io/plutus/product/' + id,
-    };
-    setProducts((prev) => [newProduct, ...prev]);
-    return newProduct;
-  }, [products.length]);
-
-  const updateProduct = useCallback((id, updates) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updates } : p))
-    );
+  const addNotification = useCallback((message, type = 'success') => {
+    const id = ++toastIdRef.current;
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts((prev) => prev.filter((n) => n.id !== id)), 3000);
   }, []);
 
-  const deleteProduct = useCallback((id) => {
+  const loadProducts = useCallback(async () => {
+    const { products } = await productsApi.list();
+    setProducts(products);
+    setProductsLoaded(true);
+    return products;
+  }, []);
+
+  const addProduct = useCallback(async (formData) => {
+    const { product } = await productsApi.create(formData);
+    setProducts((prev) => [product, ...prev]);
+    return product;
+  }, []);
+
+  const updateProduct = useCallback(async (id, formData) => {
+    const { product } = await productsApi.update(id, formData);
+    setProducts((prev) => prev.map((p) => (p.id === id ? product : p)));
+    return product;
+  }, []);
+
+  const deleteProduct = useCallback(async (id) => {
+    await productsApi.remove(id);
     setProducts((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
-  const addNotification = useCallback((message, type = 'success') => {
-    const id = Date.now();
-    setNotifications((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 3000);
+  const loadNotifications = useCallback(async () => {
+    try {
+      const { notifications } = await notificationsApi.list();
+      setNotifications(notifications);
+    } catch { /* ignore */ }
   }, []);
 
-  const totalEarnings = products.reduce((sum, p) => sum + p.revenue, 0);
-  const totalSales = products.reduce((sum, p) => sum + p.sales, 0);
-  const totalPotential = products.reduce((sum, p) => sum + p.potentialRevenue, 0);
+  const markNotificationsRead = useCallback(async (ids) => {
+    await notificationsApi.markRead(ids);
+    setNotifications((prev) => prev.map((n) => (!ids || ids.includes(n.id) ? { ...n, readAt: new Date().toISOString() } : n)));
+  }, []);
+
+  const loadWalletSummary = useCallback(async () => {
+    const data = await walletApi.summary();
+    setWalletSummary(data);
+    return data;
+  }, []);
+
+  const loadDashboard = useCallback(async () => {
+    const data = await analyticsApi.dashboard();
+    setDashboard(data);
+    return data;
+  }, []);
+
+  const updateProfile = useCallback(async (formData) => {
+    const { user: updated } = await settingsApi.profile(formData);
+    setUser(updated);
+    return updated;
+  }, [setUser]);
+
+  // Bootstrap on login
+  useEffect(() => {
+    if (status === 'authed') {
+      loadProducts().catch(() => {});
+      loadNotifications().catch(() => {});
+    } else if (status === 'anon') {
+      setProducts([]);
+      setNotifications([]);
+      setWalletSummary(null);
+      setDashboard(null);
+      setProductsLoaded(false);
+    }
+  }, [status, loadProducts, loadNotifications]);
+
+  const totalEarnings = walletSummary?.totalEarnings ?? 0;
+  const totalSales = walletSummary?.totalSales ?? 0;
 
   return (
     <StoreContext.Provider
       value={{
+        creator: user,
         products,
-        creator,
+        productsLoaded,
         notifications,
+        toasts,
+        walletSummary,
+        dashboard,
+        totalEarnings,
+        totalSales,
+        addNotification,
+        loadProducts,
         addProduct,
         updateProduct,
         deleteProduct,
-        addNotification,
-        totalEarnings,
-        totalSales,
-        totalPotential,
+        loadNotifications,
+        markNotificationsRead,
+        loadWalletSummary,
+        loadDashboard,
+        updateProfile,
       }}
     >
       {children}
@@ -73,9 +124,4 @@ export function useStore() {
   const ctx = useContext(StoreContext);
   if (!ctx) throw new Error('useStore must be inside StoreProvider');
   return ctx;
-}
-
-function estimateRevenue(price) {
-  const baseMultiplier = price < 1000 ? 350 : price < 3000 ? 220 : price < 5000 ? 150 : 80;
-  return price * baseMultiplier * (0.8 + Math.random() * 0.4);
 }

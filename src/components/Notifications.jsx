@@ -3,12 +3,12 @@ import { CheckCircle, AlertCircle, X } from 'lucide-react';
 import { useStore } from '../data/store';
 
 export default function Notifications() {
-  const { notifications } = useStore();
+  const { toasts } = useStore();
 
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
       <AnimatePresence mode="popLayout">
-        {notifications.map((n) => (
+        {toasts.map((n) => (
           <motion.div
             key={n.id}
             layout

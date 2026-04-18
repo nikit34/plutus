@@ -1,19 +1,39 @@
 import { motion } from 'framer-motion';
-import { ArrowUpRight, ArrowDownRight, Sparkles, DollarSign, ShoppingCart, Eye, TrendingUp, Zap, Target } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowUpRight, ArrowDownRight, Sparkles, DollarSign, ShoppingCart, Eye, TrendingUp, Zap, Target, Loader2 } from 'lucide-react';
 import { useStore } from '../data/store';
-import { formatPrice, formatNumber, EARNINGS_HISTORY, generateTip } from '../data/mockData';
+import { formatPrice, formatNumber, generateTip } from '../data/mockData';
+import { analyticsApi } from '../api/client';
 import Tooltip from '../components/Tooltip';
 
 export default function Analytics() {
-  const { products, totalEarnings, totalSales, totalPotential } = useStore();
-  const totalViews = products.reduce((sum, p) => sum + p.views, 0);
-  const avgConversion = products.length ? (products.filter(p => p.views > 0).reduce((sum, p) => sum + (p.sales / p.views) * 100, 0) / products.filter(p => p.views > 0).length).toFixed(1) : 0;
-  const tip = generateTip(products);
-  const sortedByRevenue = [...products].sort((a, b) => b.revenue - a.revenue);
-  const sortedByConversion = [...products].sort((a, b) => b.conversionRate - a.conversionRate);
-  const maxEarning = Math.max(...EARNINGS_HISTORY.map((e) => e.amount));
-  const unrealizedRevenue = totalPotential - totalEarnings;
-  const revenuePercent = Math.min((totalEarnings / totalPotential) * 100, 100);
+  const { products, dashboard, loadDashboard } = useStore();
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([loadDashboard().catch(() => null), analyticsApi.products().then((d) => d.products).catch(() => [])])
+      .then(([_, p]) => setRows(p))
+      .finally(() => setLoading(false));
+  }, [loadDashboard]);
+
+  const totalEarnings = dashboard?.totalEarnings || 0;
+  const totalSales = dashboard?.totalSales || 0;
+  const earningsHistory = dashboard?.earningsHistory || [];
+
+  const source = rows.length ? rows : products;
+  const totalViews = source.reduce((sum, p) => sum + (p.views || 0), 0);
+  const totalPotential = source.reduce((sum, p) => sum + (p.potentialRevenue || 0), 0);
+  const withViews = source.filter((p) => p.views > 0);
+  const avgConversion = withViews.length ? (withViews.reduce((sum, p) => sum + (p.sales / p.views) * 100, 0) / withViews.length).toFixed(1) : '0.0';
+  const tip = generateTip(source);
+  const sortedByRevenue = [...source].sort((a, b) => (b.revenue || 0) - (a.revenue || 0));
+  const sortedByConversion = [...source].sort((a, b) => (b.conversionRate || 0) - (a.conversionRate || 0));
+  const maxEarning = Math.max(1, ...earningsHistory.map((e) => e.amount));
+  const unrealizedRevenue = Math.max(0, totalPotential - totalEarnings);
+  const revenuePercent = totalPotential > 0 ? Math.min((totalEarnings / totalPotential) * 100, 100) : 0;
+
+  if (loading) return <div className="flex items-center justify-center py-24 text-text-tertiary gap-2"><Loader2 size={16} className="animate-spin" />Loading…</div>;
 
   return (
     <div className="space-y-6">
@@ -23,10 +43,10 @@ export default function Analytics() {
       </motion.div>
 
       <div className="grid grid-cols-4 gap-4">
-        <MiniStat icon={DollarSign} label="Total Revenue" value={formatPrice(totalEarnings)} change={12.3} color="gold" delay={0.05} />
-        <MiniStat icon={ShoppingCart} label="Sales" value={formatNumber(totalSales)} change={8.1} color="green" delay={0.1} />
-        <MiniStat icon={Eye} label="Views" value={formatNumber(totalViews)} change={15.7} color="blue" delay={0.15} />
-        <MiniStat icon={TrendingUp} label="Conversion" value={avgConversion + '%'} change={2.3} color="purple" delay={0.2} />
+        <MiniStat icon={DollarSign} label="Total Revenue" value={formatPrice(totalEarnings)} color="gold" delay={0.05} />
+        <MiniStat icon={ShoppingCart} label="Sales" value={formatNumber(totalSales)} color="green" delay={0.1} />
+        <MiniStat icon={Eye} label="Views" value={formatNumber(totalViews)} color="blue" delay={0.15} />
+        <MiniStat icon={TrendingUp} label="Conversion" value={avgConversion + '%'} color="purple" delay={0.2} />
       </div>
 
       <div className="grid grid-cols-5 gap-4">
@@ -38,13 +58,13 @@ export default function Analytics() {
             </div>
             <div className="text-right">
               <div className="text-xs text-text-tertiary">This month</div>
-              <div className="text-lg font-semibold text-gold">{formatPrice(EARNINGS_HISTORY[EARNINGS_HISTORY.length - 1].amount)}</div>
+              <div className="text-lg font-semibold text-gold">{formatPrice(earningsHistory.length ? earningsHistory[earningsHistory.length - 1].amount : 0)}</div>
             </div>
           </div>
           <div className="flex items-end gap-3 h-40">
-            {EARNINGS_HISTORY.map((entry, i) => {
-              const height = (entry.amount / maxEarning) * 100;
-              const isLast = i === EARNINGS_HISTORY.length - 1;
+            {(earningsHistory.length ? earningsHistory : [{ month: '—', amount: 0 }]).map((entry, i, arr) => {
+              const height = maxEarning > 0 ? (entry.amount / maxEarning) * 100 : 0;
+              const isLast = i === arr.length - 1;
               return (
                 <div key={entry.month} className="flex-1 flex flex-col items-center gap-2">
                   <div className="w-full relative flex items-end justify-center" style={{ height: '128px' }}>
@@ -157,7 +177,7 @@ export default function Analytics() {
                 <tr key={product.id} className="border-b border-border last:border-0 hover:bg-bg-elevated/50 transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <img src={product.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                      {product.image ? <img src={product.image} alt="" className="w-10 h-10 rounded-lg object-cover" /> : <div className="w-10 h-10 rounded-lg bg-bg-elevated" />}
                       <div>
                         <div className="text-sm font-medium truncate max-w-[200px]">{product.title}</div>
                         <div className="text-xs text-text-tertiary">{product.status === 'active' ? 'Active' : 'Draft'}</div>
