@@ -8,7 +8,7 @@ import Dashboard from '../Dashboard';
 import ProductPublic from '../ProductPublic';
 import Settings from '../Settings';
 
-beforeAll(() => { window.__NUMI_TEST__ = true; });
+beforeAll(() => { window.__PLUTUS_TEST__ = true; });
 
 function renderProductPage(productId = 'prod_01') {
   return render(

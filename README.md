@@ -1,4 +1,23 @@
-# React + Vite
+# Plutus
+
+Sell digital products: courses, templates, presets, guides. Get a link — share — earn.
+
+Stack: React + Vite + Tailwind. Payments via Stripe Payment Links. Deployed to GitHub Pages at [nikit34.github.io/plutus](https://nikit34.github.io/plutus/).
+
+## Development
+
+```sh
+npm install
+npm run dev
+npm test
+npm run build
+```
+
+## Stripe
+
+Each product can optionally hold a Stripe Payment Link. When set, the public product page "Buy" button redirects to Stripe Checkout instead of the mock flow. Create links at [dashboard.stripe.com/payment-links](https://dashboard.stripe.com/payment-links).
+
+---
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

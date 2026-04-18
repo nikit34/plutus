@@ -21,7 +21,7 @@ export function StoreProvider({ children }) {
       trend: 0,
       status: 'active',
       createdAt: new Date().toISOString().split('T')[0],
-      link: 'nikit34.github.io/numi/product/' + id,
+      link: 'nikit34.github.io/plutus/product/' + id,
     };
     setProducts((prev) => [newProduct, ...prev]);
     return newProduct;

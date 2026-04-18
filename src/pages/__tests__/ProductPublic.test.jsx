@@ -5,7 +5,7 @@ import { render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ProductPublic from '../ProductPublic';
 
-beforeAll(() => { window.__NUMI_TEST__ = true; });
+beforeAll(() => { window.__PLUTUS_TEST__ = true; });
 
 function renderProductPage(productId = 'prod_01') {
   return render(

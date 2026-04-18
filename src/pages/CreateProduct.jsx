@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Upload, Image as ImageIcon, X, Eye, Copy, Check, Sparkles, Palette, ArrowLeft, Link2, FileDown, FileText } from 'lucide-react';
+import { Upload, Image as ImageIcon, X, Eye, Copy, Check, Sparkles, Palette, ArrowLeft, Link2, FileDown, FileText, CreditCard } from 'lucide-react';
 import { useStore } from '../data/store';
 import { THEMES, formatPrice } from '../data/mockData';
 import SharePanel from '../components/SharePanel';
@@ -23,6 +23,7 @@ export default function CreateProduct() {
   const [contentLabel, setContentLabel] = useState(existing?.content?.label || '');
   const [contentFileName, setContentFileName] = useState(existing?.content?.fileName || '');
   const [contentText, setContentText] = useState(existing?.content?.body || '');
+  const [paymentLink, setPaymentLink] = useState(existing?.paymentLink || '');
   const [showPreview, setShowPreview] = useState(false);
   const [linkGenerated, setLinkGenerated] = useState(!!existing);
   const [copied, setCopied] = useState(false);
@@ -38,18 +39,19 @@ export default function CreateProduct() {
 
   const handleSubmit = () => {
     if (!title || !price) { addNotification('Fill in title and price', 'error'); return; }
+    const trimmedLink = paymentLink.trim() || null;
     if (existing) {
-      updateProduct(id, { title, description, price: Number(price), theme, image: mediaPreview });
+      updateProduct(id, { title, description, price: Number(price), theme, image: mediaPreview, paymentLink: trimmedLink });
       addNotification('Product updated!');
     } else {
-      addProduct({ title, description, price: Number(price), theme, image: mediaPreview || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop' });
+      addProduct({ title, description, price: Number(price), theme, image: mediaPreview || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&h=400&fit=crop', paymentLink: trimmedLink });
       addNotification('Product created!');
     }
     setLinkGenerated(true);
   };
 
   const slug = title.toLowerCase().replace(/[^a-z0-9\s]/gi, '').replace(/\s+/g, '-').slice(0, 30) || 'product';
-  const generatedLink = `nikit34.github.io/numi/product/${existing?.id || slug}`;
+  const generatedLink = `nikit34.github.io/plutus/product/${existing?.id || slug}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText('https://' + generatedLink);
@@ -105,6 +107,32 @@ export default function CreateProduct() {
             {price && (
               <div className="mt-2 text-xs text-text-tertiary">
                 Buyer pays {formatPrice(Number(price))} · Your earnings: <span className="text-green">{formatPrice(Number(price) * 0.95)}</span><span className="text-text-tertiary"> (5% fee)</span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium mb-2 text-text-secondary">
+              <CreditCard size={14} />Stripe Payment Link
+              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-bg-elevated text-text-tertiary">optional</span>
+            </label>
+            <p className="text-xs text-text-tertiary mb-3">
+              Paste a Stripe Payment Link to accept real payments. Create one at{' '}
+              <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener noreferrer" className="text-gold hover:underline">dashboard.stripe.com/payment-links</a>
+              . In Stripe, set &ldquo;After payment → Custom URL&rdquo; to{' '}
+              <code className="text-text-secondary">{`https://${generatedLink}?success=true`}</code>{' '}
+              so the buyer is sent back here.
+            </p>
+            <input
+              type="url"
+              value={paymentLink}
+              onChange={(e) => setPaymentLink(e.target.value)}
+              placeholder="https://buy.stripe.com/test_..."
+              className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px] font-mono"
+            />
+            {paymentLink && (
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-green">
+                <Check size={12} />Real Stripe checkout enabled
               </div>
             )}
           </div>

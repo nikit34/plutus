@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../../test/render';
 import Wallet from '../Wallet';
 
-beforeAll(() => { window.__NUMI_TEST__ = true; });
+beforeAll(() => { window.__PLUTUS_TEST__ = true; });
 
 describe('Job 4: Get paid (wallet)', () => {
   it('shows available balance', () => {

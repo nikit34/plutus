@@ -274,7 +274,7 @@ function ProcessingStep({ onDone }) {
   useEffect(() => {
     if (called.current) return;
     called.current = true;
-    const delay = window.__NUMI_TEST__ ? 0 : 2500;
+    const delay = window.__PLUTUS_TEST__ ? 0 : 2500;
     const timer = setTimeout(onDone, delay);
     return () => clearTimeout(timer);
   }, [onDone]);

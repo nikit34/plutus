@@ -39,7 +39,7 @@ export default function Sidebar() {
         </div>
         {!collapsed && (
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-display text-2xl font-semibold tracking-tight">
-            Numi
+            Plutus
           </motion.span>
         )}
       </div>

@@ -1,14 +1,24 @@
 import { motion } from 'framer-motion';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { ShoppingCart, Shield, Download, ExternalLink, FileText, Star, Users, Sparkles, ArrowLeft, Check, Zap, CreditCard, Loader2 } from 'lucide-react';
 import { PRODUCTS, THEMES, CREATOR, formatPrice } from '../data/mockData';
 import { useState, useEffect, useRef } from 'react';
 
 export default function ProductPublic() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const product = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0];
   const theme = THEMES[product.theme] || THEMES.midnight;
-  const [step, setStep] = useState('info'); // info → checkout → processing → content
+  const initialStep = searchParams.get('success') === 'true' ? 'content' : 'info';
+  const [step, setStep] = useState(initialStep); // info → checkout → processing → content
+
+  const handleBuyClick = () => {
+    if (product.paymentLink) {
+      window.location.href = product.paymentLink;
+      return;
+    }
+    setStep('checkout');
+  };
 
   if (step === 'processing') {
     return (
@@ -45,7 +55,7 @@ export default function ProductPublic() {
             </motion.div>
           )}
 
-          <div className="text-center mt-8"><span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}><Sparkles size={8} />Powered by Numi</span></div>
+          <div className="text-center mt-8"><span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}><Sparkles size={8} />Powered by Plutus</span></div>
         </div>
       </div>
     );
@@ -95,9 +105,16 @@ export default function ProductPublic() {
                 </div>
 
                 {step === 'info' && (
-                  <button onClick={() => setStep('checkout')} className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110" style={{ background: theme.accent, color: '#0a0a0a' }}>
-                    <ShoppingCart size={16} />Buy for {formatPrice(product.price)}
-                  </button>
+                  <>
+                    <button onClick={handleBuyClick} className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110" style={{ background: theme.accent, color: '#0a0a0a' }}>
+                      <ShoppingCart size={16} />Buy for {formatPrice(product.price)}
+                    </button>
+                    {product.paymentLink && (
+                      <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] opacity-40" style={{ color: theme.text }}>
+                        <CreditCard size={11} />Checkout powered by Stripe
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {step === 'checkout' && (
@@ -131,7 +148,7 @@ export default function ProductPublic() {
                   <div className="flex items-center gap-1.5 text-[11px] opacity-30" style={{ color: theme.text }}><Zap size={11} />Instant</div>
                 </div>
               </div>
-              <div className="text-center mt-4"><span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}><Sparkles size={8} />Powered by Numi</span></div>
+              <div className="text-center mt-4"><span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}><Sparkles size={8} />Powered by Plutus</span></div>
             </div>
           </motion.div>
         </div>
@@ -145,7 +162,7 @@ function ProcessingScreen({ theme, onDone }) {
   useEffect(() => {
     if (called.current) return;
     called.current = true;
-    const delay = window.__NUMI_TEST__ ? 0 : 2000;
+    const delay = window.__PLUTUS_TEST__ ? 0 : 2000;
     const timer = setTimeout(onDone, delay);
     return () => clearTimeout(timer);
   }, [onDone]);
