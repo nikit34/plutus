@@ -85,6 +85,8 @@ export const publicApi = {
 export const checkoutApi = {
   start: (slug, email) => api.post(`/api/checkout/${slug}`, { email }),
   session: (id) => api.get(`/api/checkout/session/${id}`),
+  startCrypto: (slug, email, payCurrency) => api.post(`/api/checkout/${slug}/crypto`, { email, payCurrency }),
+  cryptoStatus: (purchaseId) => api.get(`/api/checkout/crypto/${purchaseId}`),
 };
 
 export const accessApi = {
@@ -96,7 +98,7 @@ export const walletApi = {
   summary: () => api.get('/api/wallet/summary'),
   payouts: () => api.get('/api/wallet/payouts'),
   purchases: () => api.get('/api/wallet/purchases'),
-  withdraw: (amount) => api.post('/api/wallet/payouts', { amount }),
+  withdraw: (amount, opts = {}) => api.post('/api/wallet/payouts', { amount, ...opts }),
   connectStart: () => api.post('/api/wallet/connect/start'),
   connectRefresh: () => api.post('/api/wallet/connect/refresh'),
 };
@@ -114,4 +116,5 @@ export const notificationsApi = {
 export const settingsApi = {
   profile: (formData) => api.patchForm('/api/settings/profile', formData),
   password: (currentPassword, newPassword) => api.post('/api/settings/password', { currentPassword, newPassword }),
+  cryptoCurrencies: () => api.get('/api/settings/crypto-currencies'),
 };

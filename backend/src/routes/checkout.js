@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { query } from '../db.js';
 import { HttpError } from '../middleware/error.js';
 import { getStripe, hasStripe } from '../lib/stripe.js';
+import { createInvoice as createCryptoInvoice, hasNowpayments } from '../lib/nowpayments.js';
 import { config } from '../config.js';
 
 export const checkoutRouter = Router();
@@ -84,6 +85,85 @@ checkoutRouter.get('/session/:id', async (req, res, next) => {
        FROM purchases pu JOIN products p ON p.id = pu.product_id
        WHERE pu.stripe_session_id = $1`,
       [req.params.id]
+    );
+    const row = rows[0];
+    if (!row) return res.status(404).json({ error: 'not_found' });
+    res.json({
+      status: row.status,
+      productSlug: row.product_slug,
+      productTitle: row.product_title,
+      downloadToken: row.download_token,
+    });
+  } catch (err) { next(err); }
+});
+
+// --- Crypto checkout via NOWPayments ---
+const cryptoBodySchema = z.object({
+  email: z.string().email().optional(),
+  payCurrency: z.string().trim().min(2).max(20).optional(),
+});
+
+checkoutRouter.post('/:slug/crypto', async (req, res, next) => {
+  try {
+    if (!hasNowpayments()) throw new HttpError(500, 'nowpayments_not_configured', 'Crypto payments not configured');
+    const body = cryptoBodySchema.parse(req.body || {});
+
+    const { rows } = await query(
+      `SELECT p.*, u.email AS seller_email, u.name AS seller_name
+       FROM products p JOIN users u ON u.id = p.user_id
+       WHERE p.slug = $1 AND p.status = 'active'`,
+      [req.params.slug]
+    );
+    const product = rows[0];
+    if (!product) throw new HttpError(404, 'not_found');
+
+    const platformFeeCents = Math.floor(product.price_cents * config.platformFeePct);
+    const priceAmount = Number((product.price_cents / 100).toFixed(2));
+    const successUrl = `${config.frontendBaseUrl}/product/${product.slug}?crypto=done`;
+    const cancelUrl = `${config.frontendBaseUrl}/product/${product.slug}?crypto=canceled`;
+    const ipnCallbackUrl = `${config.apiBaseUrl}/api/webhooks/nowpayments`;
+
+    // Reserve purchase row first so order_id matches
+    const { rows: inserted } = await query(
+      `INSERT INTO purchases (product_id, seller_id, amount_cents, platform_fee_cents, currency, status, payment_provider, buyer_email)
+       VALUES ($1,$2,$3,$4,$5,'pending','nowpayments',$6) RETURNING id`,
+      [product.id, product.user_id, product.price_cents, platformFeeCents, product.currency, body.email || null]
+    );
+    const purchaseId = inserted[0].id;
+
+    let invoice;
+    try {
+      invoice = await createCryptoInvoice({
+        priceAmount,
+        priceCurrency: String(product.currency).toLowerCase(),
+        orderId: `plutus-${purchaseId}`,
+        orderDescription: product.title,
+        ipnCallbackUrl,
+        successUrl,
+        cancelUrl,
+        payCurrency: body.payCurrency,
+      });
+    } catch (err) {
+      await query("UPDATE purchases SET status='failed' WHERE id=$1", [purchaseId]);
+      throw new HttpError(502, 'nowpayments_error', err.message);
+    }
+
+    await query(
+      `UPDATE purchases SET nowpayments_invoice_id=$1 WHERE id=$2`,
+      [String(invoice.id), purchaseId]
+    );
+
+    res.json({ invoiceUrl: invoice.invoice_url, invoiceId: invoice.id, purchaseId });
+  } catch (err) { next(err); }
+});
+
+checkoutRouter.get('/crypto/:purchaseId', async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT pu.*, p.slug AS product_slug, p.title AS product_title
+       FROM purchases pu JOIN products p ON p.id = pu.product_id
+       WHERE pu.id = $1 AND pu.payment_provider = 'nowpayments'`,
+      [req.params.purchaseId]
     );
     const row = rows[0];
     if (!row) return res.status(404).json({ error: 'not_found' });

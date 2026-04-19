@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { ShoppingCart, Shield, Download, ExternalLink, FileText, Star, Users, Sparkles, Check, Zap, CreditCard, Loader2 } from 'lucide-react';
+import { ShoppingCart, Shield, Download, ExternalLink, FileText, Star, Users, Sparkles, Check, Zap, CreditCard, Loader2, Bitcoin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { THEMES } from '../data/mockData';
 import { publicApi, checkoutApi, accessApi } from '../api/client';
@@ -20,6 +20,7 @@ export default function ProductPublic() {
   const [step, setStep] = useState('info'); // info | processing | access
   const [access, setAccess] = useState(null);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [loadingCrypto, setLoadingCrypto] = useState(false);
   const [email, setEmail] = useState('');
 
   // Fetch product
@@ -86,6 +87,21 @@ export default function ProductPublic() {
       setErr(e.message || 'Could not start checkout');
     } finally {
       setLoadingCheckout(false);
+    }
+  };
+
+  const handleBuyCrypto = async () => {
+    if (!product) return;
+    setLoadingCrypto(true);
+    try {
+      const { invoiceUrl } = await checkoutApi.startCrypto(slug, email || undefined);
+      publicApi.event(slug, 'click_buy', { provider: 'nowpayments' }).catch(() => {});
+      if (invoiceUrl) window.location.href = invoiceUrl;
+      else setErr('Crypto checkout unavailable');
+    } catch (e) {
+      setErr(e.message || 'Could not start crypto checkout');
+    } finally {
+      setLoadingCrypto(false);
     }
   };
 
@@ -192,9 +208,13 @@ export default function ProductPublic() {
                   style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', color: theme.text }}
                 />
 
-                <button onClick={handleBuy} disabled={loadingCheckout} className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110 disabled:opacity-60" style={{ background: theme.accent, color: '#0a0a0a' }}>
+                <button onClick={handleBuy} disabled={loadingCheckout || loadingCrypto} className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110 disabled:opacity-60" style={{ background: theme.accent, color: '#0a0a0a' }}>
                   {loadingCheckout ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} />}
                   Buy for {formatPrice(product.price, product.currency)}
+                </button>
+                <button onClick={handleBuyCrypto} disabled={loadingCheckout || loadingCrypto} className="w-full mt-2 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all hover:brightness-110 disabled:opacity-60 border" style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.1)', color: theme.text }}>
+                  {loadingCrypto ? <Loader2 size={16} className="animate-spin" /> : <Bitcoin size={16} />}
+                  Pay with crypto
                 </button>
                 <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] opacity-40" style={{ color: theme.text }}>
                   <CreditCard size={11} />Checkout powered by Stripe

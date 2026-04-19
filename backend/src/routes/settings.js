@@ -10,6 +10,7 @@ import { hashPassword, verifyPassword } from '../lib/password.js';
 import { HttpError } from '../middleware/error.js';
 import { userDir, randomFileName, removeIfExists, toRelative, toAbsolute } from '../lib/storage.js';
 import { config } from '../config.js';
+import { isSupportedPayoutCurrency, SUPPORTED_PAYOUT_CURRENCIES } from '../lib/nowpayments.js';
 
 export const settingsRouter = Router();
 
@@ -23,6 +24,10 @@ const profileSchema = z.object({
   emailNotifSales: z.coerce.boolean().optional(),
   emailNotifPayouts: z.coerce.boolean().optional(),
   emailNotifTips: z.coerce.boolean().optional(),
+  cryptoAddress: z.string().trim().max(200).optional().or(z.literal('')).transform((v) => v || null),
+  cryptoCurrency: z.string().trim().toLowerCase().optional().or(z.literal(''))
+    .transform((v) => v || null)
+    .refine((v) => v === null || isSupportedPayoutCurrency(v), { message: 'unsupported crypto currency' }),
 });
 
 settingsRouter.patch('/profile', requireAuth, upload.single('avatar'), async (req, res, next) => {
@@ -49,9 +54,11 @@ settingsRouter.patch('/profile', requireAuth, upload.single('avatar'), async (re
          email_notif_sales = COALESCE($5, email_notif_sales),
          email_notif_payouts = COALESCE($6, email_notif_payouts),
          email_notif_tips = COALESCE($7, email_notif_tips),
-         avatar_url = $8,
+         crypto_address = COALESCE($8, crypto_address),
+         crypto_currency = COALESCE($9, crypto_currency),
+         avatar_url = $10,
          updated_at = now()
-       WHERE id=$9 RETURNING *`,
+       WHERE id=$11 RETURNING *`,
       [
         body.name ?? null,
         body.socialLink ?? null,
@@ -60,12 +67,18 @@ settingsRouter.patch('/profile', requireAuth, upload.single('avatar'), async (re
         body.emailNotifSales ?? null,
         body.emailNotifPayouts ?? null,
         body.emailNotifTips ?? null,
+        body.cryptoAddress ?? null,
+        body.cryptoCurrency ?? null,
         avatarPath,
         req.user.id,
       ]
     );
     res.json({ user: serializeUser(rows[0]) });
   } catch (err) { next(err); }
+});
+
+settingsRouter.get('/crypto-currencies', (_req, res) => {
+  res.json({ currencies: SUPPORTED_PAYOUT_CURRENCIES });
 });
 
 const pwSchema = z.object({

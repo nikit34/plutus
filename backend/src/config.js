@@ -31,6 +31,12 @@ export const config = {
   resendApiKey: process.env.RESEND_API_KEY || '',
   emailFrom: process.env.EMAIL_FROM || 'Plutus <noreply@localhost>',
 
+  nowpaymentsApiKey: process.env.NOWPAYMENTS_API_KEY || '',
+  nowpaymentsIpnSecret: process.env.NOWPAYMENTS_IPN_SECRET || '',
+  nowpaymentsSandbox: (process.env.NOWPAYMENTS_SANDBOX || 'false').toLowerCase() === 'true',
+  nowpaymentsEmail: process.env.NOWPAYMENTS_EMAIL || '',
+  nowpaymentsPassword: process.env.NOWPAYMENTS_PASSWORD || '',
+
   storageDir: process.env.STORAGE_DIR || './storage',
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB || 100),
 };

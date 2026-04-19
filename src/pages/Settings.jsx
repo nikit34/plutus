@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
-import { User, Bell, Users, LogOut, Loader2, Lock } from 'lucide-react';
+import { User, Bell, Users, LogOut, Loader2, Lock, Bitcoin } from 'lucide-react';
 import { useStore } from '../data/store';
 import { useAuth } from '../contexts/AuthContext';
 import { settingsApi } from '../api/client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Settings() {
   const { addNotification, updateProfile } = useStore();
@@ -19,9 +19,17 @@ export default function Settings() {
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
   const avatarRef = useRef(null);
 
+  const [cryptoAddress, setCryptoAddress] = useState(user?.cryptoAddress || '');
+  const [cryptoCurrency, setCryptoCurrency] = useState(user?.cryptoCurrency || '');
+  const [cryptoOptions, setCryptoOptions] = useState([]);
+
   const [currentPwd, setCurrentPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [pwdSaving, setPwdSaving] = useState(false);
+
+  useEffect(() => {
+    settingsApi.cryptoCurrencies().then(({ currencies }) => setCryptoOptions(currencies || [])).catch(() => {});
+  }, []);
 
   const initials = (user?.name || user?.email || '?').split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase();
 
@@ -43,6 +51,8 @@ export default function Settings() {
       fd.append('emailNotifSales', String(notif.sales));
       fd.append('emailNotifPayouts', String(notif.payouts));
       fd.append('emailNotifTips', String(notif.tips));
+      fd.append('cryptoAddress', cryptoAddress);
+      fd.append('cryptoCurrency', cryptoCurrency);
       if (avatarFile) fd.append('avatar', avatarFile);
       await updateProfile(fd);
       addNotification('Settings saved!');
@@ -120,6 +130,32 @@ export default function Settings() {
               <ToggleSwitch on={!!notif[item.key]} onChange={(val) => setNotif((n) => ({ ...n, [item.key]: val }))} />
             </div>
           ))}
+        </div>
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17 }} className="p-6 rounded-2xl bg-bg-card border border-border">
+        <div className="flex items-center gap-2 mb-2"><Bitcoin size={16} className="text-text-secondary" /><h3 className="text-base font-semibold">Crypto payout</h3></div>
+        <p className="text-xs text-text-tertiary mb-4">Where to send your earnings when you withdraw in crypto</p>
+        <div className="space-y-3">
+          <select
+            value={cryptoCurrency}
+            onChange={(e) => setCryptoCurrency(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary focus:border-gold/30 transition-colors text-[15px]"
+          >
+            <option value="">— select network —</option>
+            {cryptoOptions.map((c) => (
+              <option key={c.code} value={c.code}>{c.label}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            value={cryptoAddress}
+            onChange={(e) => setCryptoAddress(e.target.value)}
+            placeholder="Recipient address (e.g. TXYZ… for USDT-TRC20)"
+            spellCheck={false}
+            className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[13px] font-mono"
+          />
+          <div className="text-[11px] text-text-tertiary">Double-check network and address — crypto transfers are irreversible.</div>
         </div>
       </motion.div>
 

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreditCard, Clock, CheckCircle, Sparkles, ExternalLink, AlertCircle, X, Loader2, ArrowRight, Shield } from 'lucide-react';
+import { CreditCard, Clock, CheckCircle, Sparkles, ExternalLink, AlertCircle, X, Loader2, ArrowRight, Shield, Bitcoin } from 'lucide-react';
 import { useStore } from '../data/store';
 import { formatPrice } from '../data/mockData';
 import { walletApi } from '../api/client';
@@ -15,6 +15,7 @@ export default function Wallet() {
   const [payouts, setPayouts] = useState([]);
   const [withdrawStep, setWithdrawStep] = useState(null);
   const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawMethod, setWithdrawMethod] = useState('stripe');
   const [connecting, setConnecting] = useState(false);
 
   const load = async () => {
@@ -53,13 +54,14 @@ export default function Wallet() {
 
   const openWithdraw = () => {
     setWithdrawAmount(String(Math.floor(balance)));
+    setWithdrawMethod(stripeConnected ? 'stripe' : (user?.cryptoAddress ? 'crypto' : 'stripe'));
     setWithdrawStep('confirm');
   };
 
   const confirmWithdraw = async () => {
     setWithdrawStep('processing');
     try {
-      const { payout } = await walletApi.withdraw(Number(withdrawAmount));
+      const { payout } = await walletApi.withdraw(Number(withdrawAmount), { method: withdrawMethod });
       setPayouts((prev) => [payout, ...prev]);
       const s = await walletApi.summary();
       setSummary(s);
@@ -176,6 +178,9 @@ export default function Wallet() {
             step={withdrawStep}
             amount={withdrawAmount}
             balance={balance}
+            method={withdrawMethod}
+            onChangeMethod={setWithdrawMethod}
+            user={user}
             onChangeAmount={setWithdrawAmount}
             onConfirm={confirmWithdraw}
             onClose={() => setWithdrawStep(null)}
@@ -186,22 +191,24 @@ export default function Wallet() {
   );
 }
 
-function WithdrawModal({ step, amount, balance, onChangeAmount, onConfirm, onClose }) {
+function WithdrawModal({ step, amount, balance, method, onChangeMethod, user, onChangeAmount, onConfirm, onClose }) {
+  const processingLabel = method === 'crypto' ? 'Sending crypto via NOWPayments' : 'Sending to your bank via Stripe';
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={step !== 'processing' ? onClose : undefined} />
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 12 }} className="relative w-full max-w-md rounded-2xl bg-bg-card border border-border shadow-2xl overflow-hidden">
-        {step === 'confirm' && <ConfirmStep amount={amount} balance={balance} onChangeAmount={onChangeAmount} onConfirm={onConfirm} onClose={onClose} />}
-        {step === 'processing' && <div className="p-12 text-center"><Loader2 size={36} className="animate-spin mx-auto mb-5 text-gold" /><div className="text-lg font-semibold mb-2">Processing withdrawal…</div><div className="text-sm text-text-tertiary">Sending to your bank via Stripe</div></div>}
-        {step === 'done' && <DoneStep amount={amount} onClose={onClose} />}
+        {step === 'confirm' && <ConfirmStep amount={amount} balance={balance} method={method} onChangeMethod={onChangeMethod} user={user} onChangeAmount={onChangeAmount} onConfirm={onConfirm} onClose={onClose} />}
+        {step === 'processing' && <div className="p-12 text-center"><Loader2 size={36} className="animate-spin mx-auto mb-5 text-gold" /><div className="text-lg font-semibold mb-2">Processing withdrawal…</div><div className="text-sm text-text-tertiary">{processingLabel}</div></div>}
+        {step === 'done' && <DoneStep amount={amount} method={method} onClose={onClose} />}
       </motion.div>
     </motion.div>
   );
 }
 
-function ConfirmStep({ amount, balance, onChangeAmount, onConfirm, onClose }) {
+function ConfirmStep({ amount, balance, method, onChangeMethod, user, onChangeAmount, onConfirm, onClose }) {
   const numAmount = Number(amount);
-  const valid = numAmount > 0 && numAmount <= balance;
+  const cryptoReady = !!(user?.cryptoAddress && user?.cryptoCurrency);
+  const valid = numAmount > 0 && numAmount <= balance && (method !== 'crypto' || cryptoReady);
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -219,24 +226,64 @@ function ConfirmStep({ amount, balance, onChangeAmount, onConfirm, onClose }) {
           <button onClick={() => onChangeAmount(String(Math.floor(balance)))} className="text-xs text-gold hover:underline">Withdraw all</button>
         </div>
       </div>
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-elevated mb-5">
-        <div className="w-10 h-7 rounded-lg bg-[#635BFF] flex items-center justify-center text-[10px] font-bold text-white">Stripe</div>
-        <div className="flex-1">
-          <div className="text-sm font-medium">Connected Stripe account</div>
-          <div className="text-xs text-text-tertiary">Arrives in 1-2 business days</div>
+
+      <div className="mb-4">
+        <label className="block text-xs text-text-tertiary mb-2">Method</label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => onChangeMethod('stripe')}
+            className={`p-3 rounded-xl border text-left transition-colors ${method === 'stripe' ? 'border-gold bg-gold-dim/30' : 'border-border bg-bg-elevated hover:bg-bg-hover'}`}
+          >
+            <div className="flex items-center gap-2 mb-1"><div className="w-8 h-5 rounded bg-[#635BFF] flex items-center justify-center text-[9px] font-bold text-white">Stripe</div><span className="text-sm font-medium">Bank</span></div>
+            <div className="text-[11px] text-text-tertiary">1–2 business days</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => onChangeMethod('crypto')}
+            className={`p-3 rounded-xl border text-left transition-colors ${method === 'crypto' ? 'border-gold bg-gold-dim/30' : 'border-border bg-bg-elevated hover:bg-bg-hover'}`}
+          >
+            <div className="flex items-center gap-2 mb-1"><Bitcoin size={14} className="text-gold" /><span className="text-sm font-medium">Crypto</span></div>
+            <div className="text-[11px] text-text-tertiary">{cryptoReady ? `To ${user.cryptoCurrency.toUpperCase()}` : 'Set address in Settings'}</div>
+          </button>
         </div>
       </div>
+
+      {method === 'crypto' ? (
+        cryptoReady ? (
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-bg-elevated mb-5">
+            <Bitcoin size={16} className="text-gold mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium">{user.cryptoCurrency.toUpperCase()}</div>
+              <div className="text-[11px] text-text-tertiary font-mono truncate">{user.cryptoAddress}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-red-dim/30 border border-red/20 mb-5 text-xs text-red">
+            <AlertCircle size={14} /><span>Add a crypto address in Settings before withdrawing</span>
+          </div>
+        )
+      ) : (
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-elevated mb-5">
+          <div className="w-10 h-7 rounded-lg bg-[#635BFF] flex items-center justify-center text-[10px] font-bold text-white">Stripe</div>
+          <div className="flex-1">
+            <div className="text-sm font-medium">Connected Stripe account</div>
+            <div className="text-xs text-text-tertiary">Arrives in 1-2 business days</div>
+          </div>
+        </div>
+      )}
+
       <button onClick={onConfirm} disabled={!valid} className="w-full py-3.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
         Confirm withdrawal<ArrowRight size={14} />
       </button>
       <div className="flex items-center justify-center gap-1.5 mt-4 text-xs text-text-tertiary">
-        <Shield size={10} /><span>Secured by Stripe</span>
+        <Shield size={10} /><span>Secured by {method === 'crypto' ? 'NOWPayments' : 'Stripe'}</span>
       </div>
     </div>
   );
 }
 
-function DoneStep({ amount, onClose }) {
+function DoneStep({ amount, method, onClose }) {
   return (
     <div className="p-8 text-center">
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, delay: 0.1 }} className="w-16 h-16 rounded-full bg-green-dim mx-auto mb-5 flex items-center justify-center">
@@ -244,7 +291,7 @@ function DoneStep({ amount, onClose }) {
       </motion.div>
       <div className="text-xl font-semibold mb-2">Withdrawal sent!</div>
       <div className="text-3xl font-bold text-gold mb-2">{formatPrice(Number(amount))}</div>
-      <div className="text-sm text-text-tertiary mb-6">Funds will arrive in 1–2 business days</div>
+      <div className="text-sm text-text-tertiary mb-6">{method === 'crypto' ? 'Crypto is on its way — usually 5–30 minutes on-chain' : 'Funds will arrive in 1–2 business days'}</div>
       <button onClick={onClose} className="px-8 py-3 rounded-xl bg-bg-elevated border border-border text-sm font-medium hover:bg-bg-hover transition-colors">Done</button>
     </div>
   );

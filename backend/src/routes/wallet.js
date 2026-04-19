@@ -4,6 +4,7 @@ import { query } from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
 import { HttpError } from '../middleware/error.js';
 import { getStripe, hasStripe } from '../lib/stripe.js';
+import { createPayout as createCryptoPayout, hasNowpaymentsPayouts, isSupportedPayoutCurrency } from '../lib/nowpayments.js';
 import { serializePayout, serializePurchase } from '../lib/serialize.js';
 import { config } from '../config.js';
 import { sendPayoutConfirmation } from '../lib/email.js';
@@ -117,11 +118,15 @@ walletRouter.post('/connect/refresh', requireAuth, async (req, res, next) => {
 // --- Payout ---
 const payoutSchema = z.object({
   amount: z.union([z.number(), z.string()]).transform((v) => Number(v)).refine((v) => Number.isFinite(v) && v > 0, 'invalid amount'),
+  method: z.enum(['stripe', 'crypto']).optional().default('stripe'),
+  cryptoAddress: z.string().trim().max(200).optional(),
+  cryptoCurrency: z.string().trim().toLowerCase().optional(),
 });
 
 walletRouter.post('/payouts', requireAuth, async (req, res, next) => {
   try {
-    const { amount } = payoutSchema.parse(req.body);
+    const body = payoutSchema.parse(req.body);
+    const { amount, method } = body;
     const amountCents = Math.round(amount * 100);
 
     // Recalculate available
@@ -134,38 +139,75 @@ walletRouter.post('/payouts', requireAuth, async (req, res, next) => {
     const available = Number(summary[0].net_cents) - Number(summary[0].used_cents);
     if (amountCents > available) throw new HttpError(400, 'insufficient_funds', 'Not enough available balance');
 
-    const useStripe = hasStripe() && req.user.stripe_onboarded && req.user.stripe_account_id;
-    let stripePayoutId = null;
     let status = 'pending';
     let methodLabel = 'Bank account';
     let failureReason = null;
+    let stripePayoutId = null;
+    let cryptoAddress = null;
+    let cryptoCurrency = null;
+    let nowpaymentsWithdrawalId = null;
+    let nowpaymentsBatchId = null;
 
-    if (useStripe) {
+    if (method === 'crypto') {
+      cryptoAddress = body.cryptoAddress || req.user.crypto_address;
+      cryptoCurrency = (body.cryptoCurrency || req.user.crypto_currency || '').toLowerCase();
+      if (!cryptoAddress || !cryptoCurrency) {
+        throw new HttpError(400, 'crypto_not_configured', 'Set a crypto address and currency in Settings first');
+      }
+      if (!isSupportedPayoutCurrency(cryptoCurrency)) {
+        throw new HttpError(400, 'unsupported_currency', `${cryptoCurrency} is not supported`);
+      }
+      if (!hasNowpaymentsPayouts()) {
+        throw new HttpError(500, 'crypto_payouts_not_configured', 'NOWPAYMENTS_EMAIL/PASSWORD not set on server');
+      }
       try {
-        const stripe = getStripe();
-        // In Connect Express: payout goes from the seller's Stripe balance to their bank.
-        const payout = await stripe.payouts.create(
-          { amount: amountCents, currency: 'usd' },
-          { stripeAccount: req.user.stripe_account_id }
-        );
-        stripePayoutId = payout.id;
-        status = payout.status === 'paid' ? 'paid' : 'processing';
+        const ipnCallbackUrl = `${config.apiBaseUrl}/api/webhooks/nowpayments`;
+        // Amount sent is in the target crypto currency. For stablecoins (USDT/USDC) we can use the USD amount directly.
+        const cryptoAmount = amount;
+        const payout = await createCryptoPayout({
+          address: cryptoAddress,
+          currency: cryptoCurrency,
+          amount: cryptoAmount,
+          ipnCallbackUrl,
+        });
+        const wd = payout?.withdrawals?.[0] || {};
+        nowpaymentsWithdrawalId = wd.id ? String(wd.id) : null;
+        nowpaymentsBatchId = payout?.id ? String(payout.id) : null;
+        status = 'processing';
+        methodLabel = `Crypto (${cryptoCurrency.toUpperCase()})`;
       } catch (err) {
-        console.warn('Stripe payout failed:', err.message);
+        console.warn('NOWPayments payout failed:', err.message);
         status = 'failed';
         failureReason = err.message;
+        methodLabel = `Crypto (${cryptoCurrency.toUpperCase()})`;
       }
     } else {
-      // No Stripe Connect onboarded — mark as processing, settle manually
-      status = 'processing';
-      methodLabel = 'Manual';
+      const useStripe = hasStripe() && req.user.stripe_onboarded && req.user.stripe_account_id;
+      if (useStripe) {
+        try {
+          const stripe = getStripe();
+          const payout = await stripe.payouts.create(
+            { amount: amountCents, currency: 'usd' },
+            { stripeAccount: req.user.stripe_account_id }
+          );
+          stripePayoutId = payout.id;
+          status = payout.status === 'paid' ? 'paid' : 'processing';
+        } catch (err) {
+          console.warn('Stripe payout failed:', err.message);
+          status = 'failed';
+          failureReason = err.message;
+        }
+      } else {
+        status = 'processing';
+        methodLabel = 'Manual';
+      }
     }
 
     const { rows } = await query(
-      `INSERT INTO payouts (user_id, amount_cents, currency, status, stripe_payout_id, method_label, failure_reason, paid_at)
-       VALUES ($1,$2,'USD',$3,$4,$5,$6, CASE WHEN $3='paid' THEN now() ELSE NULL END)
+      `INSERT INTO payouts (user_id, amount_cents, currency, status, stripe_payout_id, method, method_label, crypto_address, crypto_currency, nowpayments_withdrawal_id, nowpayments_batch_id, failure_reason, paid_at)
+       VALUES ($1,$2,'USD',$3,$4,$5,$6,$7,$8,$9,$10,$11, CASE WHEN $3='paid' THEN now() ELSE NULL END)
        RETURNING *`,
-      [req.user.id, amountCents, status, stripePayoutId, methodLabel, failureReason]
+      [req.user.id, amountCents, status, stripePayoutId, method, methodLabel, cryptoAddress, cryptoCurrency, nowpaymentsWithdrawalId, nowpaymentsBatchId, failureReason]
     );
 
     await query(

@@ -66,6 +66,8 @@ export function serializeUser(u) {
     subscribers: u.subscribers || 0,
     stripeConnected: !!u.stripe_onboarded,
     stripeAccountId: u.stripe_account_id || null,
+    cryptoAddress: u.crypto_address || null,
+    cryptoCurrency: u.crypto_currency || null,
     emailNotif: {
       sales: u.email_notif_sales,
       payouts: u.email_notif_payouts,
@@ -81,7 +83,10 @@ export function serializePayout(p) {
     amount: p.amount_cents / 100,
     currency: p.currency,
     status: p.status,
-    method: p.method_label || 'Bank account',
+    method: p.method || 'stripe',
+    methodLabel: p.method_label || (p.method === 'crypto' ? `Crypto (${(p.crypto_currency || '').toUpperCase()})` : 'Bank account'),
+    cryptoAddress: p.crypto_address || null,
+    cryptoCurrency: p.crypto_currency || null,
     createdAt: p.created_at,
     paidAt: p.paid_at,
   };
