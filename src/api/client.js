@@ -67,6 +67,8 @@ export const authApi = {
   signup: (email, password, name) => api.post('/api/auth/signup', { email, password, name }),
   login: (email, password) => api.post('/api/auth/login', { email, password }),
   me: () => api.get('/api/auth/me'),
+  oauthProviders: () => api.get('/api/auth/oauth/providers'),
+  oauthStartUrl: (provider) => `${API_BASE}/api/auth/oauth/${provider}/start`,
 };
 
 export const productsApi = {

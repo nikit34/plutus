@@ -39,4 +39,9 @@ export const config = {
 
   storageDir: process.env.STORAGE_DIR || './storage',
   maxUploadMb: Number(process.env.MAX_UPLOAD_MB || 100),
+
+  oauthGoogleClientId: process.env.OAUTH_GOOGLE_CLIENT_ID || '',
+  oauthGoogleClientSecret: process.env.OAUTH_GOOGLE_CLIENT_SECRET || '',
+  oauthXClientId: process.env.OAUTH_X_CLIENT_ID || '',
+  oauthXClientSecret: process.env.OAUTH_X_CLIENT_SECRET || '',
 };

@@ -12,6 +12,8 @@ import Wallet from './pages/Wallet';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Landing from './pages/Landing';
+import OAuthCallback from './pages/OAuthCallback';
 import { useAuth } from './contexts/AuthContext';
 
 function RequireAuth({ children }) {
@@ -31,6 +33,16 @@ export default function App() {
   const { status } = useAuth();
   const isPublicProduct = location.pathname.startsWith('/product/');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  const isOAuthCallback = location.pathname === '/oauth/callback';
+  const isLanding = location.pathname === '/' && status === 'anon';
+
+  if (isOAuthCallback) {
+    return (
+      <Routes location={location}>
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
+      </Routes>
+    );
+  }
 
   if (isPublicProduct) {
     return (
@@ -40,6 +52,14 @@ export default function App() {
           <Route path="/product/:id" element={<ProductPublic />} />
         </Routes>
       </>
+    );
+  }
+
+  if (isLanding) {
+    return (
+      <Routes location={location}>
+        <Route path="/" element={<Landing />} />
+      </Routes>
     );
   }
 

@@ -56,6 +56,14 @@ export function AuthProvider({ children }) {
     setStatus('anon');
   }, []);
 
+  const applyToken = useCallback(async (token) => {
+    setToken(token);
+    const { user } = await authApi.me();
+    setUser(user);
+    setStatus('authed');
+    return user;
+  }, []);
+
   const refreshUser = useCallback(async () => {
     const { user } = await authApi.me();
     setUser(user);
@@ -63,7 +71,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, status, login, signup, logout, refreshUser, setUser }}>
+    <AuthContext.Provider value={{ user, status, login, signup, logout, refreshUser, setUser, applyToken }}>
       {children}
     </AuthContext.Provider>
   );
