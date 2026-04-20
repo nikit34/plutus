@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /oauth/
+Disallow: /dashboard
+Disallow: /wallet
+Disallow: /settings
+Disallow: /analytics
+Disallow: /create
+Disallow: /edit/
+Disallow: /product/
+Disallow: /api/
+Disallow: /files/
+
+Sitemap: https://plutus.firstmessage.ru/sitemap.xml

@@ -14,8 +14,10 @@ COPY . .
 # on the same origin, which is exactly what we want behind a tunnel.
 ARG VITE_API_BASE_URL=
 ARG VITE_GA_ID=
+ARG VITE_YM_ID=
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_GA_ID=$VITE_GA_ID
+ENV VITE_YM_ID=$VITE_YM_ID
 
 RUN npm run build
 

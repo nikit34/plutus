@@ -47,6 +47,7 @@ services:
       args:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
         VITE_GA_ID: ${VITE_GA_ID:-}
+        VITE_YM_ID: ${VITE_YM_ID:-}
     container_name: plutus-web
     restart: unless-stopped
     ports:
