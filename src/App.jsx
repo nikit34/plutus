@@ -15,6 +15,7 @@ import Signup from './pages/Signup';
 import Landing from './pages/Landing';
 import OAuthCallback from './pages/OAuthCallback';
 import { useAuth } from './contexts/AuthContext';
+import { useAnalytics } from './hooks/useAnalytics';
 
 function RequireAuth({ children }) {
   const { status } = useAuth();
@@ -31,6 +32,7 @@ function RequireAuth({ children }) {
 export default function App() {
   const location = useLocation();
   const { status } = useAuth();
+  useAnalytics();
   const isPublicProduct = location.pathname.startsWith('/product/');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
   const isOAuthCallback = location.pathname === '/oauth/callback';
