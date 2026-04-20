@@ -1,0 +1,44 @@
+{
+    admin off
+    # TLS is terminated at the Cloudflare tunnel — Caddy serves plain HTTP inside the stack.
+    auto_https off
+}
+
+:80 {
+    encode zstd gzip
+
+    # Backend API
+    handle /api/* {
+        reverse_proxy api:4000
+    }
+
+    # Stripe and NOWPayments webhooks — no request-body buffering, raw bytes matter
+    # for signature verification. Handled under /api/webhooks by the regular /api rule;
+    # Caddy does not buffer by default.
+
+    # User-uploaded public files (covers, avatars). Download-gated content files
+    # also live under /api/access/:token/file — those go through the /api matcher above.
+    handle /files/* {
+        reverse_proxy api:4000
+    }
+
+    # Everything else — SPA. try_files sends unknown paths to index.html so that
+    # client-side routing works on hard refresh.
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+    }
+
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        -Server
+    }
+
+    log {
+        output stdout
+        format console
+    }
+}

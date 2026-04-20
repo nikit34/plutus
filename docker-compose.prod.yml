@@ -1,0 +1,59 @@
+# Production stack for plutus.firstmessage.ru
+#
+# Runs behind a Cloudflare named tunnel (configured on the host machine
+# at C:\Users\permi\.cloudflared\config.yml). This stack listens on host
+# port 8082 and the tunnel's ingress maps the hostname to http://localhost:8082.
+#
+# Start: docker compose -f docker-compose.prod.yml up -d --build
+# Logs:  docker compose -f docker-compose.prod.yml logs -f
+# Stop:  docker compose -f docker-compose.prod.yml down
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: plutus-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: plutus
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+      POSTGRES_DB: plutus
+    volumes:
+      - plutus-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plutus -d plutus"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend
+    container_name: plutus-api
+    restart: unless-stopped
+    env_file: backend/.env
+    environment:
+      # Overridden for the container network — postgres hostname is the service name.
+      DATABASE_URL: postgres://plutus:${POSTGRES_PASSWORD}@postgres:5432/plutus
+      STORAGE_DIR: /app/storage
+    volumes:
+      - plutus-storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+        VITE_GA_ID: ${VITE_GA_ID:-}
+    container_name: plutus-web
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:8082:80"
+    depends_on:
+      - api
+
+volumes:
+  plutus-pg-data:
+  plutus-storage:

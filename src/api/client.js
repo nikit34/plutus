@@ -1,4 +1,12 @@
-const DEFAULT_BASE = (typeof window !== 'undefined' && window.__PLUTUS_API_BASE__) || import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+// Resolution order:
+//   1. window.__PLUTUS_API_BASE__  — runtime injection (optional)
+//   2. VITE_API_BASE_URL           — set at build time; empty string keeps the SPA on
+//                                     same-origin (what we want behind a tunnel).
+//   3. Default                     — localhost:4000 in dev, same-origin in prod.
+const envBase = import.meta.env.VITE_API_BASE_URL;
+const fallbackBase = import.meta.env.PROD ? '' : 'http://localhost:4000';
+const DEFAULT_BASE = (typeof window !== 'undefined' && window.__PLUTUS_API_BASE__)
+  ?? (envBase !== undefined ? envBase : fallbackBase);
 
 export const API_BASE = DEFAULT_BASE.replace(/\/$/, '');
 
