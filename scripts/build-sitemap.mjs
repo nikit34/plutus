@@ -28,7 +28,10 @@ async function walk(dir) {
 
 function toUrlPath(file) {
   const rel = relative(publicDir, file).split(sep).join('/');
+  if (rel === 'index.html') return '/';
   if (rel.endsWith('/index.html')) return '/' + rel.slice(0, -'index.html'.length);
+  // Caddy try_files serves `/foo` -> `/foo.html` — prefer extensionless canonical URLs.
+  if (rel.endsWith('.html')) return '/' + rel.slice(0, -'.html'.length);
   return '/' + rel;
 }
 
@@ -55,7 +58,8 @@ async function main() {
   const urls = await Promise.all(entries.map(async (e) => {
     let lastmod = e.lastmod;
     if (e.path !== '/') {
-      const rel = e.path === '/' ? 'index.html' : e.path.replace(/^\//, '');
+      // Resolve the on-disk file for lastmod: extensionless canonical URL `/foo` lives at `/foo.html`.
+      const rel = e.path.replace(/^\//, '') + '.html';
       lastmod = await getLastMod(join(publicDir, rel));
     }
     return { ...e, lastmod };

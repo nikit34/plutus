@@ -22,11 +22,12 @@
         reverse_proxy api:4000
     }
 
-    # Everything else — SPA. try_files sends unknown paths to index.html so that
-    # client-side routing works on hard refresh.
+    # Everything else — SPA + programmatic SEO static pages.
+    # try_files order: direct file, then <path>.html (extensionless SEO URLs),
+    # then index.html fallback for client-side routing on hard refresh.
     handle {
         root * /srv
-        try_files {path} /index.html
+        try_files {path} {path}.html /index.html
         file_server
     }
 
