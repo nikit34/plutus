@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "migrate": "node src/migrate.js",
-    "test": "node --env-file=.env.test --test 'src/lib/__tests__/*.test.js'"
+    "test": "node --env-file=.env.test --test src/lib/__tests__/jwt.test.js src/lib/__tests__/password.test.js src/lib/__tests__/nowpayments.test.js src/lib/__tests__/oauth.test.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
