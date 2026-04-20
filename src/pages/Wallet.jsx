@@ -77,11 +77,11 @@ export default function Wallet() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Wallet</h1>
+        <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">Wallet</h1>
         <p className="text-text-secondary text-sm mt-1">Manage your earnings and payouts</p>
       </motion.div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="p-6 rounded-2xl bg-bg-card border border-border relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="relative">
@@ -110,8 +110,8 @@ export default function Wallet() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="col-span-2 p-6 rounded-2xl bg-bg-card border border-border">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="md:col-span-2 p-6 rounded-2xl bg-bg-card border border-border">
           <div className="flex items-center gap-2 mb-5"><CreditCard size={16} className="text-text-secondary" /><h3 className="text-base font-semibold">Payout method</h3></div>
           {stripeConnected ? (
             <div className="space-y-4">
@@ -229,7 +229,7 @@ function ConfirmStep({ amount, balance, method, onChangeMethod, user, onChangeAm
 
       <div className="mb-4">
         <label className="block text-xs text-text-tertiary mb-2">Method</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => onChangeMethod('stripe')}

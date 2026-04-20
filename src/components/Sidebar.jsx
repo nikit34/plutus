@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   Package,
@@ -9,8 +9,9 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../data/store';
 import { formatPrice } from '../data/mockData';
 
@@ -21,17 +22,38 @@ const navItems = [
   { to: '/wallet', icon: Wallet, label: 'Wallet' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen = false, onMobileClose }) {
   const [collapsed, setCollapsed] = useState(false);
   const { creator, totalEarnings } = useStore();
   const location = useLocation();
 
+  // Close mobile drawer on route change
+  useEffect(() => {
+    if (mobileOpen && onMobileClose) onMobileClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   return (
+    <>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onMobileClose}
+            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+          />
+        )}
+      </AnimatePresence>
     <motion.aside
       initial={false}
-      animate={{ width: collapsed ? 72 : 260 }}
+      animate={{ width: collapsed ? 72 : 260, x: mobileOpen ? 0 : undefined }}
       transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed left-0 top-0 bottom-0 z-40 flex flex-col border-r border-border bg-bg-card"
+      className={`fixed left-0 top-0 bottom-0 z-40 flex flex-col border-r border-border bg-bg-card transition-transform md:translate-x-0 ${
+        mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}
+      style={{ width: collapsed ? 72 : 260 }}
     >
       <div className="flex items-center gap-3 px-5 h-16 border-b border-border">
         <div className="w-8 h-8 rounded-lg bg-gold flex items-center justify-center flex-shrink-0">
@@ -42,6 +64,13 @@ export default function Sidebar() {
             Plutus
           </motion.span>
         )}
+        <button
+          onClick={onMobileClose}
+          aria-label="Close menu"
+          className="ml-auto md:hidden text-text-tertiary hover:text-text-primary p-1"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {!collapsed && (
@@ -104,12 +133,13 @@ export default function Sidebar() {
 
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="mx-3 mb-4 flex items-center justify-center gap-2 py-2 rounded-lg text-text-tertiary hover:text-text-secondary hover:bg-bg-elevated transition-colors text-xs"
+        className="hidden md:flex mx-3 mb-4 items-center justify-center gap-2 py-2 rounded-lg text-text-tertiary hover:text-text-secondary hover:bg-bg-elevated transition-colors text-xs"
       >
         {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         {!collapsed && <span>Collapse</span>}
       </button>
     </motion.aside>
+    </>
   );
 }
 

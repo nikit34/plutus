@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plutus vs Stripe Payment Links for digital product sellers</title>
+  <meta name="description" content="Stripe Payment Links are free but leave you to solve delivery, licensing, analytics, and crypto. Plutus adds exactly that layer for 5% per sale. When each is the right call." />
+  <meta name="keywords" content="stripe payment links, stripe alternative, stripe payment links vs, digital product delivery, stripe for digital products, plutus vs stripe" />
+  <link rel="canonical" href="https://plutus.firstmessage.ru/vs/stripe-payment-links" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta property="og:site_name" content="Plutus" />
+  <meta property="og:title" content="Plutus vs Stripe Payment Links for digital product sellers" />
+  <meta property="og:description" content="Stripe Payment Links are free but leave you to solve delivery, licensing, analytics, and crypto. Plutus adds exactly that layer for 5% per sale. When each is the right call." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://plutus.firstmessage.ru/vs/stripe-payment-links" />
+  <meta property="og:image" content="https://plutus.firstmessage.ru/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Plutus vs Stripe Payment Links for digital product sellers" />
+  <meta name="twitter:description" content="Stripe Payment Links are free but leave you to solve delivery, licensing, analytics, and crypto. Plutus adds exactly that layer for 5% per sale. When each is the right call." />
+  <meta name="twitter:image" content="https://plutus.firstmessage.ru/og-image.png" />
+  <link rel="stylesheet" href="/seo/style.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I still use Stripe with Plutus?","acceptedAnswer":{"@type":"Answer","text":"Yes — Plutus uses Stripe Connect for card processing. Your Stripe account handles the money; Plutus adds the product-platform layer. Payouts land in the same Stripe-connected bank account."}},{"@type":"Question","name":"Can I bring my own Stripe Payment Link into Plutus?","acceptedAnswer":{"@type":"Answer","text":"Yes — Plutus supports a \"custom payment link\" field on each product. If you want Stripe to host the checkout (maybe you have a specific setup), point Plutus at your existing Payment Link."}},{"@type":"Question","name":"Is Plutus cheaper than building Stripe + custom code?","acceptedAnswer":{"@type":"Answer","text":"Depends on your hourly rate and how many products you sell. For a single product with <50 sales, building yourself is cheaper. For 5+ products with 100+ sales, Plutus usually wins on total cost."}},{"@type":"Question","name":"Does Plutus replace Stripe?","acceptedAnswer":{"@type":"Answer","text":"No — Plutus runs on Stripe. Think of Plutus as \"Stripe Payment Links plus everything you would otherwise build\" for digital-product sellers."}},{"@type":"Question","name":"What about refunds?","acceptedAnswer":{"@type":"Answer","text":"Plutus refunds go through Stripe (or NOWPayments for crypto). One-click from your Wallet dashboard. Full or partial refunds supported."}}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://plutus.firstmessage.ru/"},{"@type":"ListItem","position":2,"name":"Compare","item":"https://plutus.firstmessage.ru/vs"},{"@type":"ListItem","position":3,"name":"vs Stripe Payment Links","item":"https://plutus.firstmessage.ru/vs/stripe-payment-links"}]}</script>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/"><span class="brand-dot"></span>Plutus</a>
+      <a class="nav-cta" href="/signup">Start free</a>
+    </div>
+  </header>
+  <nav class="crumbs"><a href="/">Home</a><span>/</span><a href="/vs">Compare</a><span>/</span><span>vs Stripe Payment Links</span></nav>
+  
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="eyebrow">Comparison · 2026</div>
+      <h1>Plutus vs Stripe Payment Links</h1>
+      <p class="lede">Stripe Payment Links are free and excellent for collecting one-off payments. They are not a product platform. Here is exactly where the line is — and when it makes sense to pay 5% for everything above that line.</p>
+      <div class="cta-row"><a class="btn btn-primary" href="/signup">Start free on Plutus</a><a class="btn btn-secondary" href="#compare">Full comparison</a></div>
+      <div class="hero-proof"><span><span class="check">✓</span> Digital delivery built-in</span><span><span class="check">✓</span> Crypto checkout</span><span><span class="check">✓</span> Analytics</span></div>
+    </div>
+  </section>
+  
+    <section>
+      <div class="wrap prose">
+        <div class="section-eyebrow">What Stripe Payment Links give you</div>
+        <h2>A checkout URL — and that is it</h2>
+        
+        <p>Stripe Payment Links are an elegant primitive: create a link, share it, collect payment. No monthly fee, no platform cut (just Stripe's standard processing: 2.9% + $0.30).</p><p>For a single-product freelancer, or for collecting deposits on invoices, that is all you need. The challenge begins when your product is a digital file, a course, or anything that requires delivery after payment.</p>
+      </div>
+    </section>
+    <section>
+      <div class="wrap prose">
+        <div class="section-eyebrow">Where Payment Links end</div>
+        <h2>What you build yourself when using Stripe alone</h2>
+        
+        <p><strong>Delivery mechanism.</strong> After payment, you need to send the buyer the file, link, or access. With Payment Links alone, this is a manual email, a webhook + Zapier setup, or custom code.</p><p><strong>Per-buyer license protection.</strong> If you share a public download URL, it leaks within days. You need signed, time-limited URLs per buyer. This is a custom backend.</p><p><strong>Product page.</strong> Payment Links generate a Stripe-hosted page that is functional but bare. For an illustrator or course creator, the buying experience starts before the checkout — your product page matters.</p><p><strong>Analytics.</strong> Stripe shows transactions. It does not show conversion rate, revenue-per-view, or which traffic source converted. You need that to scale.</p><p><strong>Crypto checkout.</strong> Stripe does not accept crypto directly. If you want USDT/BTC buyers, you integrate NOWPayments/Coinbase Commerce yourself.</p><p><strong>Refunds dashboard, receipts, notifications.</strong> Stripe has them for payments; for digital-product-specific flows (re-send download link, extend expiration), you build or skip.</p>
+      </div>
+    </section>
+    <section>
+      <div class="wrap">
+        <div class="section-eyebrow">Side by side</div>
+        <h2>What each gives you out of the box</h2>
+        
+        <div class="compare">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="highlight">Plutus</th>
+                <th>Stripe Payment Links</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td class="row-label">Platform fee</td>
+                  <td class="highlight">5% per sale</td>
+                  <td>$0</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Processing</td>
+                  <td class="highlight">2.9% + $0.30 (Stripe)</td>
+                  <td>2.9% + $0.30 (Stripe)</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Product page</td>
+                  <td class="highlight">Branded, themed</td>
+                  <td>Stripe-hosted, minimal</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Delivery of digital goods</td>
+                  <td class="highlight">Automatic + signed</td>
+                  <td>You build it</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Signed download links</td>
+                  <td class="highlight">Per-buyer token</td>
+                  <td>You build it</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Crypto checkout</td>
+                  <td class="highlight">USDT, BTC, ETH</td>
+                  <td>Not available</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Analytics</td>
+                  <td class="highlight">Conversion, RPV, trends</td>
+                  <td>Payments only</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Discount codes</td>
+                  <td class="highlight">Native</td>
+                  <td>Promotion codes (Stripe)</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Multiple payout methods</td>
+                  <td class="highlight">Bank + crypto</td>
+                  <td>Bank only (Stripe)</td>
+                </tr>
+                <tr>
+                  <td class="row-label">Best for</td>
+                  <td class="highlight">Digital product creators</td>
+                  <td>Freelancers, deposits, one-offs</td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="wrap prose">
+        <div class="section-eyebrow">The trade</div>
+        <h2>What 5% is actually buying</h2>
+        
+        <p>The 5% Plutus fee is the difference between "DIY Stripe + 5 tools + custom code" and "paste a link, ship product, get paid." For most indie creators, the cost of their time solving delivery, per-buyer licensing, analytics, and crypto checkout far exceeds 5% of revenue.</p><p>Do the math: if your course costs $200 and you sell 10 copies, Plutus' fee is $100. Solving signed delivery and a per-buyer license system in code costs many hours; solving analytics and a better product page, many more. At $10/hour value of your time, Plutus pays for itself on the first sale.</p>
+      </div>
+    </section>
+    <section>
+      <div class="wrap">
+        <div class="section-eyebrow">Decision</div>
+        <h2>When each is the right call</h2>
+        
+        <ol class="prose">
+          <li><strong>Use Stripe Payment Links when.</strong> You are a freelancer invoicing for services. You are collecting a one-off deposit. You already have a custom site handling delivery, analytics, and branding.</li><li><strong>Use Plutus when.</strong> You are selling digital products (templates, courses, PDFs) to multiple buyers. You want per-buyer delivery, analytics, crypto, and a branded page without coding any of it.</li><li><strong>Use both when.</strong> Offer products on Plutus; use Payment Links for bespoke quotes or service invoicing. Nothing stops you.</li>
+        </ol>
+      </div>
+    </section>
+  
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-eyebrow">FAQ</div>
+      <h2 style="margin-bottom: 48px;">Good questions</h2>
+      <div class="faq">
+        
+          <details>
+            <summary>Do I still use Stripe with Plutus?</summary>
+            <div class="answer">Yes — Plutus uses Stripe Connect for card processing. Your Stripe account handles the money; Plutus adds the product-platform layer. Payouts land in the same Stripe-connected bank account.</div>
+          </details>
+          <details>
+            <summary>Can I bring my own Stripe Payment Link into Plutus?</summary>
+            <div class="answer">Yes — Plutus supports a "custom payment link" field on each product. If you want Stripe to host the checkout (maybe you have a specific setup), point Plutus at your existing Payment Link.</div>
+          </details>
+          <details>
+            <summary>Is Plutus cheaper than building Stripe + custom code?</summary>
+            <div class="answer">Depends on your hourly rate and how many products you sell. For a single product with <50 sales, building yourself is cheaper. For 5+ products with 100+ sales, Plutus usually wins on total cost.</div>
+          </details>
+          <details>
+            <summary>Does Plutus replace Stripe?</summary>
+            <div class="answer">No — Plutus runs on Stripe. Think of Plutus as "Stripe Payment Links plus everything you would otherwise build" for digital-product sellers.</div>
+          </details>
+          <details>
+            <summary>What about refunds?</summary>
+            <div class="answer">Plutus refunds go through Stripe (or NOWPayments for crypto). One-click from your Wallet dashboard. Full or partial refunds supported.</div>
+          </details>
+      </div>
+    </div>
+  </section>
+  
+  <section class="final-cta">
+    <div class="wrap">
+      <h2>Stripe handles money. Plutus handles products.</h2>
+      <p class="section-lede" style="margin-left:auto;margin-right:auto;text-align:center;max-width:520px;">Skip building your own digital-product layer. Launch free, pay 5% only on sales.</p>
+      <a class="btn btn-primary" href="/signup">Start selling free →</a>
+    </div>
+  </section>
+  <footer>
+    <div class="wrap footer-inner">
+      <a class="brand" href="/"><span class="brand-dot"></span>Plutus</a>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/#features">Features</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="/#faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

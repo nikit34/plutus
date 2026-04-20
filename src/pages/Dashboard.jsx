@@ -45,7 +45,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">
+        <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
           Hey, <span className="gold-shimmer">{firstName}</span>
         </h1>
         <p className="text-text-secondary text-sm mt-1">Here is what happened today</p>
@@ -53,14 +53,14 @@ export default function Dashboard() {
 
       <OnboardingChecklist />
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <QuickStat icon={DollarSign} label="Earned today" value={formatPrice(today.earnings)} change={today.earningsChange} delay={0.05} />
         <QuickStat icon={ShoppingCart} label="Sales today" value={today.sales} change={today.salesChange} delay={0.1} />
         <QuickStat icon={Eye} label="Views today" value={formatNumber(today.views)} change={today.viewsChange} delay={0.15} />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="col-span-2 rounded-2xl bg-bg-card border border-border">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-2 rounded-2xl bg-bg-card border border-border">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-base font-semibold">Feed</h2>
             <span className="text-xs text-text-tertiary">Recent</span>

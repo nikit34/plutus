@@ -26,29 +26,29 @@ export default function Products() {
 
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-end justify-between">
+      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight">Products</h1>
+          <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">Products</h1>
           <p className="text-text-secondary mt-1 text-sm">{products.length} products created</p>
         </div>
-        <Link to="/create" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all no-underline">
+        <Link to="/create" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all no-underline self-start sm:self-auto">
           <Plus size={16} />New Product
         </Link>
       </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="relative flex-1 sm:max-w-sm">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
           <input type="text" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-bg-card border border-border text-sm text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors" />
         </div>
-        <div className="flex items-center gap-1 bg-bg-card border border-border rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-bg-card border border-border rounded-xl p-1 self-start">
           {[{ key: 'all', label: 'All' }, { key: 'active', label: 'Active' }, { key: 'draft', label: 'Drafts' }].map((f) => (
             <button key={f.key} onClick={() => setFilter(f.key)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === f.key ? 'bg-gold-dim text-gold' : 'text-text-secondary hover:text-text-primary'}`}>{f.label}</button>
           ))}
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((product, i) => (
           <ProductCard key={product.id} product={product} index={i}
             onCopyLink={() => { navigator.clipboard.writeText('https://' + product.link); addNotification('Link copied!'); }}

@@ -38,19 +38,19 @@ export default function Analytics() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Analytics</h1>
+        <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">Analytics</h1>
         <p className="text-text-secondary text-sm mt-1">Detailed stats for your products</p>
       </motion.div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MiniStat icon={DollarSign} label="Total Revenue" value={formatPrice(totalEarnings)} color="gold" delay={0.05} />
         <MiniStat icon={ShoppingCart} label="Sales" value={formatNumber(totalSales)} color="green" delay={0.1} />
         <MiniStat icon={Eye} label="Views" value={formatNumber(totalViews)} color="blue" delay={0.15} />
         <MiniStat icon={TrendingUp} label="Conversion" value={avgConversion + '%'} color="purple" delay={0.2} />
       </div>
 
-      <div className="grid grid-cols-5 gap-4">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="col-span-3 p-6 rounded-2xl bg-bg-card border border-border">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="lg:col-span-3 p-6 rounded-2xl bg-bg-card border border-border">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-semibold">Earnings Trend</h3>
@@ -77,7 +77,7 @@ export default function Analytics() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="col-span-2 p-6 rounded-2xl bg-bg-card border border-border relative overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="lg:col-span-2 p-6 rounded-2xl bg-bg-card border border-border relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="relative">
             <div className="flex items-center gap-2 mb-4">
@@ -118,8 +118,8 @@ export default function Analytics() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="col-span-2 p-6 rounded-2xl bg-bg-card border border-border">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="lg:col-span-2 p-6 rounded-2xl bg-bg-card border border-border">
           <h3 className="text-sm font-medium text-text-secondary mb-4">Revenue by product</h3>
           <div className="space-y-3">
             {sortedByRevenue.map((product, i) => {

@@ -123,13 +123,13 @@ export default function CreateProduct() {
       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4">
         <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-xl bg-bg-card border border-border flex items-center justify-center hover:bg-bg-elevated transition-colors"><ArrowLeft size={16} /></button>
         <div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight">{existing ? 'Edit Product' : 'New Product'}</h1>
+          <h1 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">{existing ? 'Edit Product' : 'New Product'}</h1>
           <p className="text-text-secondary text-sm mt-0.5">{existing ? 'Update your product details' : 'Create a digital product listing'}</p>
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-5 gap-6">
-        <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="col-span-3 space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-3 space-y-5">
           <div>
             <label className="block text-sm font-medium mb-2 text-text-secondary">Title</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Notion System for Freelancers" className="w-full px-4 py-3 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-tertiary focus:border-gold/30 transition-colors text-[15px]" />
@@ -213,7 +213,7 @@ export default function CreateProduct() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-medium mb-3 text-text-secondary"><Palette size={14} />Card theme</label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {Object.entries(THEMES).map(([key, t]) => (
                 <button key={key} onClick={() => setTheme(key)} className={`relative h-20 rounded-xl overflow-hidden border-2 transition-all ${theme === key ? 'border-gold scale-[1.02]' : 'border-transparent hover:border-border-strong'}`} style={{ background: t.bg }}>
                   <div className="absolute inset-0 flex items-center justify-center"><span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: t.accent, background: t.accent + '20' }}>{t.name}</span></div>
@@ -247,8 +247,8 @@ export default function CreateProduct() {
           </AnimatePresence>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="col-span-2">
-          <div className="sticky top-8">
+        <motion.div initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-2">
+          <div className="lg:sticky lg:top-8">
             <div className="text-xs uppercase tracking-widest text-text-tertiary mb-3 flex items-center gap-2"><Eye size={12} />Card preview</div>
             <div className="rounded-2xl overflow-hidden border border-border" style={{ background: selectedTheme.bg }}>
               <div className="h-48 overflow-hidden relative">

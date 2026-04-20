@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Menu, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Notifications from './components/Notifications';
 import Dashboard from './pages/Dashboard';
@@ -32,6 +33,7 @@ function RequireAuth({ children }) {
 export default function App() {
   const location = useLocation();
   const { status } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useAnalytics();
   const isPublicProduct = location.pathname.startsWith('/product/');
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
@@ -77,9 +79,23 @@ export default function App() {
 
   return (
     <RequireAuth>
-      <div className="min-h-screen" style={{ paddingLeft: 260 }}>
-        <Sidebar />
-        <main className="min-h-screen p-8 pb-16">
+      <div className="min-h-screen md:pl-[260px]">
+        <Sidebar mobileOpen={mobileMenuOpen} onMobileClose={() => setMobileMenuOpen(false)} />
+        <header className="md:hidden sticky top-0 z-20 flex items-center justify-between px-4 h-14 border-b border-border bg-bg-card/90 backdrop-blur-xl">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+            className="p-2 -ml-2 text-text-secondary hover:text-text-primary"
+          >
+            <Menu size={22} />
+          </button>
+          <div className="flex items-center gap-2 text-gold">
+            <Sparkles size={16} />
+            <span className="font-display text-lg font-semibold tracking-tight">Plutus</span>
+          </div>
+          <div className="w-8" />
+        </header>
+        <main className="min-h-screen p-4 pb-16 md:p-8">
           <Notifications />
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>

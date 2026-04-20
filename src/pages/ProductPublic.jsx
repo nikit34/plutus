@@ -161,11 +161,11 @@ export default function ProductPublic() {
 
   return (
     <div className="min-h-screen" style={{ background: theme.bg }}>
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-5 gap-10">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="col-span-3">
-            {product.image && <div className="rounded-2xl overflow-hidden mb-8 border border-white/5"><img src={product.image} alt={product.title} className="w-full h-72 object-cover" /></div>}
-            <h1 className="font-display text-4xl font-semibold leading-tight mb-4" style={{ color: theme.text }}>{product.title}</h1>
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-10">
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="lg:col-span-3">
+            {product.image && <div className="rounded-2xl overflow-hidden mb-6 md:mb-8 border border-white/5"><img src={product.image} alt={product.title} className="w-full h-56 md:h-72 object-cover" /></div>}
+            <h1 className="font-display text-3xl md:text-4xl font-semibold leading-tight mb-4" style={{ color: theme.text }}>{product.title}</h1>
             <p className="text-base leading-relaxed opacity-60 mb-8" style={{ color: theme.text }}>{product.description}</p>
             <div className="flex items-center gap-6 mb-8">
               <div className="flex items-center gap-2"><Users size={14} style={{ color: theme.accent }} /><span className="text-sm opacity-70" style={{ color: theme.text }}>{product.sales}+ bought</span></div>
@@ -184,12 +184,12 @@ export default function ProductPublic() {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.15 }} className="col-span-2">
-            <div className="sticky top-8">
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.15 }} className="lg:col-span-2">
+            <div className="lg:sticky lg:top-8">
               <div className="rounded-2xl p-6 border" style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.08)' }}>
                 <div className="text-center mb-6">
                   <div className="text-xs uppercase tracking-widest opacity-40 mb-1" style={{ color: theme.text }}>Price</div>
-                  <div className="font-display text-5xl font-bold" style={{ color: theme.accent }}>{formatPrice(product.price, product.currency)}</div>
+                  <div className="font-display text-4xl md:text-5xl font-bold" style={{ color: theme.accent }}>{formatPrice(product.price, product.currency)}</div>
                   <div className="text-xs opacity-30 mt-1" style={{ color: theme.text }}>One-time payment · No subscription</div>
                 </div>
                 <div className="h-px my-5" style={{ background: 'rgba(255,255,255,0.06)' }} />

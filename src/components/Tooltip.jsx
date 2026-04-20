@@ -8,7 +8,7 @@ export default function Tooltip({ children, className = '' }) {
     <span className="relative inline-flex" onMouseEnter={() => setVisible(true)} onMouseLeave={() => setVisible(false)}>
       <HelpCircle size={13} className={`text-text-tertiary hover:text-text-secondary cursor-help transition-colors ${className}`} />
       {visible && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-72 p-3 rounded-xl bg-bg-card border border-border shadow-2xl text-xs text-text-secondary leading-relaxed">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-[min(18rem,calc(100vw-2rem))] p-3 rounded-xl bg-bg-card border border-border shadow-2xl text-xs text-text-secondary leading-relaxed">
           {children}
           <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-bg-card border-r border-b border-border rotate-45 -mt-1" />
         </div>
