@@ -9,10 +9,10 @@
 # Logs to $env:USERPROFILE\plutus-sync.log.
 #
 # Design choices (mirrors health-mdt-sync.ps1):
-#   - No '2>$null' on git — PowerShell loses exit code when stderr is redirected.
-#   - Every iteration logs a heartbeat — silence = dead process.
-#   - Initial reconcile wrapped in try — Docker hiccup at startup must NOT stop polling.
-#   - 'git reset --hard' over 'git pull' — survives local untracked files from failed builds.
+#   - No '2>$null' on git - PowerShell loses exit code when stderr is redirected.
+#   - Every iteration logs a heartbeat - silence = dead process.
+#   - Initial reconcile wrapped in try - Docker hiccup at startup must NOT stop polling.
+#   - 'git reset --hard' over 'git pull' - survives local untracked files from failed builds.
 
 $repo    = "$env:USERPROFILE\plutus"
 $logPath = "$env:USERPROFILE\plutus-sync.log"
@@ -74,7 +74,7 @@ while ($true) {
                 if ($LASTEXITCODE -eq 0) {
                     Log "deployed $shortRemote ok" "Green"
                 } else {
-                    Log "deploy exit $LASTEXITCODE — stack may be broken, will retry next poll" "Red"
+                    Log "deploy exit $LASTEXITCODE - stack may be broken, will retry next poll" "Red"
                 }
             } elseif ($iteration % $heartbeatEvery -eq 0) {
                 Log "in sync at $($before.Substring(0, 7))" "DarkGray"
