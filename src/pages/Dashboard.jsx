@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { useStore } from '../data/store';
 import { formatPrice, formatNumber, generateTip } from '../data/mockData';
 import Tooltip from '../components/Tooltip';
+import OnboardingChecklist from '../components/OnboardingChecklist';
 
 function timeAgo(iso) {
   if (!iso) return '';
@@ -49,6 +50,8 @@ export default function Dashboard() {
         </h1>
         <p className="text-text-secondary text-sm mt-1">Here is what happened today</p>
       </motion.div>
+
+      <OnboardingChecklist />
 
       <div className="grid grid-cols-3 gap-4">
         <QuickStat icon={DollarSign} label="Earned today" value={formatPrice(today.earnings)} change={today.earningsChange} delay={0.05} />
