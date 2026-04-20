@@ -53,6 +53,9 @@ export function verifyState(token) {
   const [body, sig] = token.split('.');
   if (!body || !sig) return null;
   const expected = crypto.createHmac('sha256', config.jwtSecret).update(body).digest('base64url');
+  // Guard length before timingSafeEqual — it throws on mismatched Buffer lengths
+  // instead of returning false, which would surface as a 500 on a bogus token.
+  if (expected.length !== sig.length) return null;
   if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig))) return null;
   let payload;
   try { payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')); } catch { return null; }

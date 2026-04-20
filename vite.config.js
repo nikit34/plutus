@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       setupFiles: './src/test/setup.js',
       globals: true,
+      // Backend has its own tests via `node --test` — exclude them from vitest.
+      include: ['src/**/*.test.{js,jsx}'],
+      exclude: ['node_modules', 'backend/**', 'dist/**'],
     },
   }
 })
