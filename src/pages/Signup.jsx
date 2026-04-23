@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import OAuthButtons from '../components/OAuthButtons';
+import { trackEvent } from '../hooks/useAnalytics';
 
 export default function Signup() {
   const { signup } = useAuth();
@@ -22,6 +23,7 @@ export default function Signup() {
     setLoading(true);
     try {
       await signup(email.trim(), password, name.trim() || undefined);
+      trackEvent('sign_up', { method: 'email' });
       navigate('/', { replace: true });
     } catch (err) {
       setError(err.message || 'Signup failed');

@@ -4,6 +4,8 @@ import {
   Sparkles, ArrowRight, Check, X, Zap, Shield, Bitcoin, CreditCard,
   BarChart3, Palette, FileDown, Link2, FileText, Star,
 } from 'lucide-react';
+import { getHeroVariant } from '../lib/abTest';
+import { trackEvent } from '../hooks/useAnalytics';
 
 const FEE = 5;
 const GUMROAD_FEE = 10;
@@ -45,7 +47,11 @@ function Nav() {
         </nav>
         <div className="flex items-center gap-3">
           <Link to="/login" className="text-sm text-text-secondary hover:text-text-primary transition-colors no-underline">Log in</Link>
-          <Link to="/signup" className="px-4 py-2 rounded-xl bg-gold text-bg-primary text-sm font-semibold hover:brightness-110 transition-all no-underline">
+          <Link
+            to="/signup"
+            onClick={() => trackEvent('hero_cta_click', { cta_location: 'nav' })}
+            className="px-4 py-2 rounded-xl bg-gold text-bg-primary text-sm font-semibold hover:brightness-110 transition-all no-underline"
+          >
             Start free
           </Link>
         </div>
@@ -57,6 +63,8 @@ function Nav() {
 /* ------------------------------- Hero ------------------------------- */
 
 function Hero() {
+  const variant = getHeroVariant();
+  const headline = variant === 'B' ? 'The fair alternative to Gumroad.' : 'Sell digital products.';
   return (
     <section className="relative">
       <div className="absolute inset-0 pointer-events-none">
@@ -76,7 +84,7 @@ function Hero() {
             transition={{ delay: 0.05 }}
             className="font-display font-semibold tracking-tight leading-[1.02] text-5xl md:text-7xl mb-6"
           >
-            Sell digital products.<br />
+            {headline}<br />
             <span className="gold-shimmer italic">Keep {100 - FEE}%.</span>
           </motion.h1>
           <motion.p
@@ -93,7 +101,11 @@ function Hero() {
             transition={{ delay: 0.2 }}
             className="flex flex-wrap items-center gap-3"
           >
-            <Link to="/signup" className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all no-underline">
+            <Link
+              to="/signup"
+              onClick={() => trackEvent('hero_cta_click', { cta_location: 'hero' })}
+              className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm hover:brightness-110 transition-all no-underline"
+            >
               Start selling free
               <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </Link>
@@ -436,7 +448,11 @@ function Pricing() {
                 </li>
               ))}
             </ul>
-            <Link to="/signup" className="block w-full py-3.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm text-center hover:brightness-110 transition-all no-underline">
+            <Link
+              to="/signup"
+              onClick={() => trackEvent('hero_cta_click', { cta_location: 'pricing' })}
+              className="block w-full py-3.5 rounded-xl bg-gold text-bg-primary font-semibold text-sm text-center hover:brightness-110 transition-all no-underline"
+            >
               Start selling for free
             </Link>
             <div className="mt-4 text-center text-xs text-text-tertiary">Takes less than 5 minutes · No credit card required</div>
@@ -577,7 +593,11 @@ function FinalCTA() {
         <p className="text-lg text-text-secondary mb-8 max-w-xl mx-auto">
           Stop losing 10% to Gumroad. Stop building payment infrastructure you'll maintain forever. Just launch.
         </p>
-        <Link to="/signup" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold text-bg-primary font-semibold text-base hover:brightness-110 transition-all no-underline">
+        <Link
+          to="/signup"
+          onClick={() => trackEvent('hero_cta_click', { cta_location: 'final' })}
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold text-bg-primary font-semibold text-base hover:brightness-110 transition-all no-underline"
+        >
           Start selling free
           <ArrowRight size={16} />
         </Link>

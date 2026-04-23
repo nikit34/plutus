@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { getHeroVariant } from '../lib/abTest';
 
 const GA_ID = import.meta.env.VITE_GA_ID;
 const YM_ID = import.meta.env.VITE_YM_ID;
@@ -47,11 +48,12 @@ function initYM() {
 }
 
 export function trackEvent(name, params) {
+  const enriched = { ...(params || {}), hero_variant: getHeroVariant() };
   if (GA_ID && typeof window.gtag === 'function') {
-    window.gtag('event', name, params);
+    window.gtag('event', name, enriched);
   }
   if (YM_ID && typeof window.ym === 'function') {
-    window.ym(YM_ID, 'reachGoal', name, params);
+    window.ym(YM_ID, 'reachGoal', name, enriched);
   }
 }
 
@@ -65,17 +67,20 @@ export function useAnalytics() {
 
   useEffect(() => {
     const path = location.pathname + location.search;
+    const variant = getHeroVariant();
     if (GA_ID && typeof window.gtag === 'function') {
       window.gtag('event', 'page_view', {
         page_path: path,
         page_location: window.location.href,
         page_title: document.title,
+        hero_variant: variant,
       });
     }
     if (YM_ID && typeof window.ym === 'function') {
       window.ym(YM_ID, 'hit', window.location.href, {
         title: document.title,
         referer: document.referrer,
+        params: { hero_variant: variant },
       });
     }
   }, [location.pathname, location.search]);
