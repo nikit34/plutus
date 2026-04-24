@@ -80,33 +80,18 @@ function Hero() {
 
       <div className="relative max-w-6xl mx-auto px-6 pt-20 pb-24 grid md:grid-cols-5 gap-12 items-center">
         <div className="md:col-span-3">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-dim border border-gold/15 text-xs text-gold mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-dim border border-gold/15 text-xs text-gold mb-6">
             <Sparkles size={11} />
             For digital creators — built 2026
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="font-display font-semibold tracking-tight leading-[1.02] text-5xl md:text-7xl mb-6"
-          >
+          </div>
+          <h1 className="font-display font-semibold tracking-tight leading-[1.02] text-5xl md:text-7xl mb-6">
             {headline}<br />
             <span className="gold-shimmer italic">Keep {100 - FEE}%.</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12 }}
-            className="text-lg text-text-secondary leading-relaxed max-w-xl mb-8"
-          >
+          </h1>
+          <p className="text-lg text-text-secondary leading-relaxed max-w-xl mb-8">
             The creator platform for eBooks, templates, courses, and guides. Beautiful product pages, instant payouts to bank or crypto, zero code required.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-wrap items-center gap-3"
-          >
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               to="/signup"
               onClick={() => trackEvent('hero_cta_click', { cta_location: 'hero' })}
@@ -118,17 +103,12 @@ function Hero() {
             <a href="#how" className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-bg-card border border-border text-sm font-medium hover:bg-bg-elevated transition-colors no-underline">
               See how it works
             </a>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 flex items-center gap-6 text-xs text-text-tertiary"
-          >
+          </div>
+          <div className="mt-8 flex items-center gap-6 text-xs text-text-tertiary">
             <span className="flex items-center gap-1.5"><Check size={12} className="text-green" /> No monthly fee</span>
             <span className="flex items-center gap-1.5"><Check size={12} className="text-green" /> 5 min to set up</span>
             <span className="flex items-center gap-1.5"><Check size={12} className="text-green" /> Crypto + bank payouts</span>
-          </motion.div>
+          </div>
         </div>
 
         <div className="md:col-span-2">
