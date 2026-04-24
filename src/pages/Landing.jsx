@@ -6,12 +6,18 @@ import {
 } from 'lucide-react';
 import { getHeroVariant } from '../lib/abTest';
 import { trackEvent } from '../hooks/useAnalytics';
+import useSEO from '../hooks/useSEO';
 
 const FEE = 5;
 const GUMROAD_FEE = 10;
 const ETSY_FEE = 6.5;
 
 export default function Landing() {
+  useSEO({
+    title: 'Plutus — Sell Digital Products. Keep 95%.',
+    description: 'Creator platform for eBooks, templates, courses and guides. Card + crypto checkout, instant payouts. 5% flat fee, no monthly.',
+    canonicalPath: '/',
+  });
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary overflow-x-hidden">
       <Nav />

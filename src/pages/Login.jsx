@@ -4,8 +4,15 @@ import { motion } from 'framer-motion';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import OAuthButtons from '../components/OAuthButtons';
+import useSEO from '../hooks/useSEO';
 
 export default function Login() {
+  useSEO({
+    title: 'Log in — Plutus',
+    description: 'Log in to your Plutus creator account.',
+    canonicalPath: '/login',
+    noindex: true,
+  });
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

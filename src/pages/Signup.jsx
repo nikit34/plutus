@@ -5,8 +5,15 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import OAuthButtons from '../components/OAuthButtons';
 import { trackEvent } from '../hooks/useAnalytics';
+import useSEO from '../hooks/useSEO';
 
 export default function Signup() {
+  useSEO({
+    title: 'Sign up — Plutus',
+    description: 'Create a free Plutus account and start selling digital products. 5% flat fee, no monthly.',
+    canonicalPath: '/signup',
+    noindex: true,
+  });
   const { signup } = useAuth();
   const navigate = useNavigate();
 

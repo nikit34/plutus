@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { ShoppingCart, Shield, Download, ExternalLink, FileText, Star, Users, Sparkles, Check, Zap, CreditCard, Loader2, Bitcoin } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { THEMES } from '../data/mockData';
 import { publicApi, checkoutApi, accessApi } from '../api/client';
+import useSEO from '../hooks/useSEO';
+
+const SITE = 'https://plutus.firstmessage.ru';
 
 const formatPrice = (amt, currency = 'USD') => new Intl.NumberFormat('en-US', {
   style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0,
@@ -73,6 +76,37 @@ export default function ProductPublic() {
   }, [accessToken]);
 
   const theme = THEMES[product?.theme] || THEMES.midnight;
+
+  const productJsonLd = useMemo(() => {
+    if (!product) return null;
+    const url = `${SITE}/product/${slug}`;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.title,
+      description: product.description,
+      ...(product.image ? { image: product.image } : {}),
+      productID: slug,
+      url,
+      offers: {
+        '@type': 'Offer',
+        price: String(product.price ?? 0),
+        priceCurrency: product.currency || 'USD',
+        availability: 'https://schema.org/InStock',
+        url,
+      },
+    };
+  }, [product, slug]);
+
+  const seoTitle = product ? `${product.title} — Plutus` : undefined;
+  const seoDescription = product?.description;
+  useSEO({
+    title: seoTitle,
+    description: seoDescription,
+    canonicalPath: product ? `/product/${slug}` : undefined,
+    image: product?.image,
+    jsonLd: productJsonLd,
+  });
 
   const handleBuy = async () => {
     if (!product) return;
@@ -153,7 +187,7 @@ export default function ProductPublic() {
             </motion.div>
           )}
 
-          <div className="text-center mt-8"><span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}><Sparkles size={8} />Powered by Plutus</span></div>
+          <div className="text-center mt-8"><a href={`https://plutus.firstmessage.ru/?utm_source=plutus_badge&utm_medium=referral&utm_campaign=storefront&ref=${slug}`} target="_blank" rel="noopener noreferrer" className="text-[10px] opacity-20 hover:opacity-60 transition-opacity flex items-center justify-center gap-1 no-underline" style={{ color: theme.text }}><Sparkles size={8} />Powered by Plutus</a></div>
         </div>
       </div>
     );
@@ -227,7 +261,7 @@ export default function ProductPublic() {
                   <div className="flex items-center gap-1.5 text-[11px] opacity-30" style={{ color: theme.text }}><Zap size={11} />Instant</div>
                 </div>
               </div>
-              <div className="text-center mt-4"><span className="text-[10px] opacity-20 flex items-center justify-center gap-1" style={{ color: theme.text }}><Sparkles size={8} />Powered by Plutus</span></div>
+              <div className="text-center mt-4"><a href={`https://plutus.firstmessage.ru/?utm_source=plutus_badge&utm_medium=referral&utm_campaign=storefront&ref=${slug}`} target="_blank" rel="noopener noreferrer" className="text-[10px] opacity-20 hover:opacity-60 transition-opacity flex items-center justify-center gap-1 no-underline" style={{ color: theme.text }}><Sparkles size={8} />Powered by Plutus</a></div>
             </div>
           </motion.div>
         </div>
