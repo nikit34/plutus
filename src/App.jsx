@@ -1,22 +1,29 @@
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Loader2, Menu, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import Sidebar from './components/Sidebar';
 import Notifications from './components/Notifications';
-import Dashboard from './pages/Dashboard';
-import Products from './pages/Products';
-import CreateProduct from './pages/CreateProduct';
-import ProductPublic from './pages/ProductPublic';
-import Analytics from './pages/Analytics';
-import Wallet from './pages/Wallet';
-import Settings from './pages/Settings';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
 import Landing from './pages/Landing';
-import OAuthCallback from './pages/OAuthCallback';
 import { useAuth } from './contexts/AuthContext';
 import { useAnalytics } from './hooks/useAnalytics';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Products = lazy(() => import('./pages/Products'));
+const CreateProduct = lazy(() => import('./pages/CreateProduct'));
+const ProductPublic = lazy(() => import('./pages/ProductPublic'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const Wallet = lazy(() => import('./pages/Wallet'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const OAuthCallback = lazy(() => import('./pages/OAuthCallback'));
+
+const RouteFallback = () => (
+  <div className="min-h-screen flex items-center justify-center text-text-tertiary gap-2">
+    <Loader2 size={16} className="animate-spin" />
+  </div>
+);
 
 function RequireAuth({ children }) {
   const { status } = useAuth();
@@ -42,9 +49,11 @@ export default function App() {
 
   if (isOAuthCallback) {
     return (
-      <Routes location={location}>
-        <Route path="/oauth/callback" element={<OAuthCallback />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes location={location}>
+          <Route path="/oauth/callback" element={<OAuthCallback />} />
+        </Routes>
+      </Suspense>
     );
   }
 
@@ -52,9 +61,11 @@ export default function App() {
     return (
       <>
         <Notifications />
-        <Routes location={location}>
-          <Route path="/product/:id" element={<ProductPublic />} />
-        </Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes location={location}>
+            <Route path="/product/:id" element={<ProductPublic />} />
+          </Routes>
+        </Suspense>
       </>
     );
   }
@@ -70,10 +81,12 @@ export default function App() {
   if (isAuthPage) {
     if (status === 'authed') return <Navigate to="/" replace />;
     return (
-      <Routes location={location}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes location={location}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </Suspense>
     );
   }
 
@@ -98,16 +111,18 @@ export default function App() {
         <main className="min-h-screen p-4 pb-16 md:p-8">
           <Notifications />
           <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/create" element={<CreateProduct />} />
-              <Route path="/edit/:id" element={<CreateProduct />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/wallet" element={<Wallet />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes location={location} key={location.pathname}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/create" element={<CreateProduct />} />
+                <Route path="/edit/:id" element={<CreateProduct />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
           </AnimatePresence>
         </main>
       </div>
