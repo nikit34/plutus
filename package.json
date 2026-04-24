@@ -8,7 +8,7 @@
     "gen:seo": "node scripts/gen-seo-pages.mjs",
     "sitemap": "node scripts/build-sitemap.mjs",
     "prebuild": "node scripts/gen-seo-pages.mjs && node scripts/build-sitemap.mjs",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir dist-server && node scripts/prerender.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

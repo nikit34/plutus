@@ -5,14 +5,16 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [status, setStatus] = useState('loading'); // loading | authed | anon
+  // Initialize synchronously: anon users skip the 'loading' state so the
+  // prerendered Landing matches the client's first render (no hydration flash).
+  const [status, setStatus] = useState(() => {
+    if (typeof window === 'undefined') return 'anon';
+    return getToken() ? 'loading' : 'anon';
+  });
 
   const bootstrap = useCallback(async () => {
     const token = getToken();
-    if (!token) {
-      setStatus('anon');
-      return;
-    }
+    if (!token) return;
     try {
       const { user } = await authApi.me();
       setUser(user);

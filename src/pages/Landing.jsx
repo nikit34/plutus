@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -69,7 +70,10 @@ function Nav() {
 /* ------------------------------- Hero ------------------------------- */
 
 function Hero() {
-  const variant = getHeroVariant();
+  // Match SSR output ('A') on first render, then swap to the persisted
+  // variant after hydration to avoid a hydration-mismatch warning.
+  const [variant, setVariant] = useState('A');
+  useEffect(() => { setVariant(getHeroVariant()); }, []);
   const headline = variant === 'B' ? 'The fair alternative to Gumroad.' : 'Sell digital products.';
   return (
     <section className="relative">
