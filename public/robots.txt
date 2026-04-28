@@ -1,3 +1,4 @@
+# Search engine crawlers — full access except authenticated app surfaces
 User-agent: *
 Allow: /
 Disallow: /login
@@ -12,5 +13,90 @@ Disallow: /edit/
 Disallow: /product/
 Disallow: /api/
 Disallow: /files/
+
+# Generative AI crawlers — explicitly allowed for citation in ChatGPT,
+# Perplexity, Claude, Gemini, You.com, etc. Restricted to public pages.
+User-agent: GPTBot
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /oauth/
+Disallow: /dashboard
+Disallow: /wallet
+Disallow: /settings
+Disallow: /analytics
+Disallow: /create
+Disallow: /edit/
+Disallow: /product/
+Disallow: /api/
+Disallow: /files/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /files/
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /files/
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /files/
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /oauth/
+Disallow: /dashboard
+Disallow: /wallet
+Disallow: /settings
+Disallow: /analytics
+Disallow: /create
+Disallow: /edit/
+Disallow: /product/
+Disallow: /api/
+Disallow: /files/
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+Disallow: /files/
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
 
 Sitemap: https://plutus.firstmessage.ru/sitemap.xml

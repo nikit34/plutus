@@ -1,0 +1,7 @@
+Contact: mailto:noreply@plutus.firstmessage.ru
+Contact: https://github.com/nikit34/plutus/security/advisories/new
+Expires: 2027-04-28T00:00:00.000Z
+Preferred-Languages: en, ru
+Canonical: https://plutus.firstmessage.ru/.well-known/security.txt
+Acknowledgments: https://github.com/nikit34/plutus
+Policy: https://github.com/nikit34/plutus/security/policy

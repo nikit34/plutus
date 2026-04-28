@@ -1,0 +1,36 @@
+name: Feature request
+description: Propose a new capability or improvement.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What's the user-facing problem? Don't jump to a solution yet.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should it work? UI sketches, API shape, or example flows welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you've tried, or other tools that solve this differently.
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - Seller (creator) experience
+        - Buyer experience
+        - Self-hosted operator
+        - Developer / API
+        - Other
+    validations:
+      required: true

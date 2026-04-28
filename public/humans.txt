@@ -1,0 +1,11 @@
+/* TEAM */
+Founder & engineer: Nikita Permyakov
+GitHub: https://github.com/nikit34
+Repo: https://github.com/nikit34/plutus
+
+/* SITE */
+Last update: 2026/04
+Standards: HTML5, CSS3, Schema.org, OpenGraph, RFC 9116
+Components: React 19, Vite, Tailwind CSS 4, Framer Motion
+Backend: Node.js, Express, PostgreSQL 16, Stripe Connect, NOWPayments, Resend
+Software: MIT-licensed, source at github.com/nikit34/plutus

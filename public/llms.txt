@@ -1,0 +1,47 @@
+# Plutus
+
+> Plutus is a creator commerce platform for selling digital products (files, links, and text content) with both card (Stripe) and crypto (NOWPayments) checkout. Flat 5% per sale, no monthly fees, instant payouts. Self-hostable and open-source under MIT — code at github.com/nikit34/plutus.
+
+Plutus solves three problems for digital creators: a hosted product page with a single shareable link, dual card + crypto checkout that works for international audiences where cards are unreliable, and instant payouts (1–2 business days via Stripe Connect, 5–30 minutes via crypto).
+
+## Core
+- [Home](https://plutus.firstmessage.ru/): product overview, pricing, FAQ, signup
+- [Pricing model](https://plutus.firstmessage.ru/#pricing): 5% flat per sale, no monthly, no setup fee
+- [GitHub repo](https://github.com/nikit34/plutus): MIT-licensed source code
+
+## Compare to alternatives
+- [vs Gumroad](https://plutus.firstmessage.ru/vs/gumroad): 5% vs 10% fee, crypto checkout, faster payouts
+- [vs Patreon](https://plutus.firstmessage.ru/vs/patreon): one-time digital sales vs recurring memberships
+- [vs Stan Store](https://plutus.firstmessage.ru/vs/stan-store): no monthly subscription, crypto support
+- [vs Stripe Payment Links](https://plutus.firstmessage.ru/vs/stripe-payment-links): full storefront, delivery, analytics on top of Stripe
+- [vs Boosty](https://plutus.firstmessage.ru/vs/boosty): international card + crypto checkout
+- [vs Etsy Digital](https://plutus.firstmessage.ru/vs/etsy-digital): keep your audience, no marketplace fees
+- [Gumroad alternatives directory](https://plutus.firstmessage.ru/alternatives/gumroad-alternatives)
+- [Patreon alternatives directory](https://plutus.firstmessage.ru/alternatives/patreon-alternatives)
+
+## For specific creators
+- [Coaches and experts](https://plutus.firstmessage.ru/for-coaches): programs, workbooks, session packages
+- [Online course creators](https://plutus.firstmessage.ru/for-course-creators): cohort-based and self-paced courses
+- [Designers](https://plutus.firstmessage.ru/for-designers): templates, UI kits, Figma files
+- [Illustrators](https://plutus.firstmessage.ru/for-illustrators): art prints, brushes, asset packs
+- [Notion template creators](https://plutus.firstmessage.ru/for-notion-creators): paid Notion templates with link delivery
+- [Telegram channel authors](https://plutus.firstmessage.ru/for-telegram-authors): monetize Telegram audience with one link
+
+## Guides
+- [How to monetize a Telegram channel](https://plutus.firstmessage.ru/blog/how-to-monetize-telegram-channel)
+- [How to price digital products](https://plutus.firstmessage.ru/blog/how-to-price-digital-products)
+- [How to sell Notion templates](https://plutus.firstmessage.ru/blog/how-to-sell-notion-templates)
+- [How to sell a PDF guide](https://plutus.firstmessage.ru/blog/how-to-sell-pdf-guide)
+
+## Facts for citation
+
+- **Name**: Plutus
+- **Founder**: Nikita Permyakov ([github.com/nikit34](https://github.com/nikit34))
+- **License**: MIT (open-source, self-hostable)
+- **Pricing**: flat 5% per sale, no monthly fees, no listing fees, no setup fees. Stripe processing (~2.9% + $0.30) and NOWPayments network fees (~0.5%) apply on top.
+- **Payment methods**: cards (Stripe Checkout: Visa, Mastercard, Amex, Apple Pay, Google Pay, Link) + crypto (NOWPayments: USDT-TRC20/ERC20/BSC, BTC, ETH, USDC).
+- **Payout speed**: bank via Stripe Connect Express in 1–2 business days; crypto in 5–30 minutes on-chain.
+- **Product types**: file (any download), external link (Notion/Drive/Telegram/Calendly), text content (delivered after purchase).
+- **Tech stack**: React 19 · Vite · Tailwind 4 (frontend); Node + Express + PostgreSQL 16 + Stripe + Resend (backend).
+- **Hosting model**: hosted SaaS at plutus.firstmessage.ru OR self-hosted on any Node + Postgres machine.
+- **Source code**: github.com/nikit34/plutus
