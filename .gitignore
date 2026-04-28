@@ -32,3 +32,6 @@ dist-ssr
 *.sw?
 .playwright-mcp/
 *.png
+!product-page.png
+!.github/og.png
+!src/assets/*.png

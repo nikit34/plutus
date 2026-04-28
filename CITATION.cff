@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "Plutus — open-source creator commerce platform"
+message: "If you reference Plutus, please cite this software."
+type: software
+authors:
+  - family-names: Permyakov
+    given-names: Nikita
+    alias: nikit34
+repository-code: "https://github.com/nikit34/plutus"
+url: "https://plutus.firstmessage.ru"
+abstract: >-
+  Plutus is a self-hostable, open-source platform for selling digital
+  products (files, external links, text content) via Stripe Checkout,
+  with Stripe Connect Express payouts, transactional email through
+  Resend, analytics dashboard, and a public storefront. A self-hosted
+  alternative to Gumroad, Patreon, Lemon Squeezy and Stan Store.
+keywords:
+  - creator-economy
+  - digital-products
+  - stripe
+  - stripe-connect
+  - ecommerce
+  - self-hosted
+  - gumroad-alternative
+  - patreon-alternative
+  - react
+  - nodejs
+  - postgresql
+license: MIT
